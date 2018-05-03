@@ -19,7 +19,7 @@ server.connect((IP_address, Port))
 
 while True:
     t = test()
-    t_str = pickle.dump(t)
+    t_str = pickle.dumps(t)
     server.send(t_str)
 
 
