@@ -1,7 +1,7 @@
 import socket
 import select
 import sys
-from _thread import *
+from thread import *
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.getsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
