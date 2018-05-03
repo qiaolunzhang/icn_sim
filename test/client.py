@@ -19,8 +19,6 @@ server.connect((IP_address, Port))
 
 while True:
 
-
-
     # maintains a list of possible input streams
     sockets_list = [sys.stdin, server]
 
@@ -39,11 +37,12 @@ while True:
             message = socks.recv(2048)
             print(message)
         else:
-            message = sys.stdin.readline()
+            #message = sys.stdin.readline()
             t = test()
-            t_str = pickle.dump(t)
+            t_str = pickle.dumps(t)
             # server.send(t_str)
             message = t_str
+            print("t_str is ", t_str)
 
             server.send(message)
             sys.stdout.write("<You>")
