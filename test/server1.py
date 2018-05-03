@@ -34,23 +34,20 @@ def clientthread(conn, addr):
     conn.send("Welcome to this chatroom")
 
     while True:
-        try:
-            message = conn.recv(2048)
-            if message:
-                """prints the message and address of the user who
-                just sent the message on the server terminal"""
-                print("<" + addr[0] + "> " + message)
-                print("\nafter load:", type(pickle.load(message)))
+        message = conn.recv(2048)
+        if message:
+            """prints the message and address of the user who
+            just sent the message on the server terminal"""
+            print("<" + addr[0] + "> " + message)
+            print("\nafter load:", type(pickle.load(message)))
 
-                # calls broadcast function to send message to all
-                message_to_send = "<" + addr[0] + "> " + message
-                broadcast(message_to_send, conn)
-            else:
-                """message may have no content if the connection is
-                broken, in this case we remove the connection"""
-                remove(conn)
-        except:
-            continue
+            # calls broadcast function to send message to all
+            message_to_send = "<" + addr[0] + "> " + message
+            broadcast(message_to_send, conn)
+        else:
+            """message may have no content if the connection is
+            broken, in this case we remove the connection"""
+            remove(conn)
 
 """Using the below function, we broadcast the message to all clients
 who's object is not the same as the one sending the message"""
