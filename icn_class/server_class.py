@@ -64,7 +64,7 @@ class ChatServer:
                     CONNECTION_LIST.remove(sock)
                     continue
 
-    def socet_handle(self):
+    def socket_handle(self):
         while 1:
             # Get the list sockets which are ready to be read through select
             read_sockets, write_sockets, error_sockets = select.select(CONNECTION_LIST, [], [])
@@ -79,7 +79,7 @@ class ChatServer:
                     self.chat(sock)
 
     def main(self):
-        self.socet_handle()
+        self.socket_handle()
         self.serverSocket.close()
 
 if __name__ == '__main__':
