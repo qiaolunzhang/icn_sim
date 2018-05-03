@@ -1,6 +1,7 @@
 # Python program to implement client side of chat room.
 import socket
 import select
+import struct
 import sys
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -32,6 +33,7 @@ while True:
             print(message)
         else:
             message = sys.stdin.readline()
+            message = struct.pack('>I', len(message)) + message
             server.send(message)
             sys.stdout.write("<You>")
             sys.stdout.write(message)

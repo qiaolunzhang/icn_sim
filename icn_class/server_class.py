@@ -7,7 +7,7 @@ outBufSize = 4096
 CONNECTION_LIST = []
 
 class ChatServer:
-    def __init__(self,port=5251):
+    def __init__(self, port=5251):
         # todo 使用socketserver来写
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serverSocket.bind(('', port))
