@@ -2,7 +2,7 @@
 import socket, select, string, sys
 HOST = '10.0.2.4'
 PORT = 5251
-ID = '1'
+ID = '2'
 
 class ChatClient:
     def __init__(self):
