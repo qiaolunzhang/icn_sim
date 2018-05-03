@@ -4,6 +4,7 @@ import socket
 import select
 import threading
 
+#@todo 读取文件参数
 _HOST = '127.0.0.1'  # defines the host as "localhost"
 _PORT = 10000        # defines the port as "10000"
 
@@ -136,7 +137,8 @@ class Router(threading.Thread):
                             if data:
                                 print "The received data is " + data
                                 # ... and broadcasts it to all the connected clients
-                                self._broadcast(sock, "\r" + '<' + str(sock.getpeername()) + '> ' + data)
+                                # self._broadcast(sock, "\r" + '<' + str(sock.getpeername()) + '> ' + data)
+                                #@todo 在这里写一个发送的给下一条的函数
                         except socket.error:
                             # Broadcasts all the connected clients that a clients has left
                             self._broadcast(sock, "\nClient (%s, %s) is offline\n" % client_address)
