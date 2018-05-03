@@ -30,8 +30,8 @@ def clientthread(conn, addr):
         try:
             message = conn.recv(2048)
             if message:
-                print("\nafter load:", pickle.load(message))
-                """prints the message and address of the user who 
+                # print("\nafter load:", pickle.load(message))
+                """prints the message and address of the user who
                 just sent the message on the server terminal"""
                 print("<" + addr[0] + "> " + message)
 
@@ -54,14 +54,14 @@ def broadcast(message,  connection):
         except:
             clients.close()
 
-"""The following function simply removes the object from the list 
+"""The following function simply removes the object from the list
 that was created at the beginning of the program"""
 def remove(connection):
     if connection in list_of_clients:
         list_of_clients.remove(connection)
 
 while True:
-    """Accepts a connection request and stores two parameters, 
+    """Accepts a connection request and stores two parameters,
     conn which is a socket object for that user, and addr which
     contains the IP address of the client that just connected"""
     conn, addr = server.accept()
