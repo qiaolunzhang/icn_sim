@@ -1,7 +1,7 @@
 import select
 import socket
 import sys
-from _thread import *
+from thread import *
 
 """The first argument AF_INET is the address domain of the
 socket. This is used when we have an Internet Domain with
