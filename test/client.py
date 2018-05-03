@@ -18,9 +18,7 @@ Port = int(sys.argv[2])
 server.connect((IP_address, Port))
 
 while True:
-    t = test()
-    t_str = pickle.dump(t)
-    server.send(t_str)
+
 
 
     # maintains a list of possible input streams
@@ -42,6 +40,11 @@ while True:
             print(message)
         else:
             message = sys.stdin.readline()
+            t = test()
+            t_str = pickle.dump(t)
+            # server.send(t_str)
+            message = t_str
+
             server.send(message)
             sys.stdout.write("<You>")
             sys.stdout.write(message)
