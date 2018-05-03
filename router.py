@@ -134,6 +134,7 @@ class Router(threading.Thread):
                         try:
                             data = self._receive(sock) # Gets the client message...
                             if data:
+                                print("The received data is ", data)
                                 # ... and broadcasts it to all the connected clients
                                 self._broadcast(sock, "\r" + '<' + str(sock.getpeername()) + '> ' + data)
                         except socket.error:
