@@ -6,20 +6,15 @@ import struct
 _HOST = '127.0.0.1'
 _PORT = 10000
 
-
-class Router:
+class Publisher:
     MAX_WAITING_CONNECTIONS = 100
     RECV_BUFFER = 4096
     RECV_MSG_LEN = 4
     RECV_MSG_TYPE_LEN = 4
 
     def __init__(self, host, port):
-        # store the fib form
-        self.fib_dic = {}
-        # store the pit form
-        self.pit_dic = {}
-        # store the cs form
-        self.cs_dic = {}
+        # store the data
+        self.data_dic = {}
 
         self.host = host
         self.port = port
@@ -29,11 +24,11 @@ class Router:
 
     def load_config(self):
         try:
-            with open('./config/router.conf') as f:
+            with open('./config/publisher.conf') as f:
                 for line in f:
                     if line[0] != '#':
                         line = line.split()
-                        self.fib_dic[line[0]] = line[1]
+                        self.data_dic[line[0]] = line[1]
 
             #print(self.fib_dic)
         except:
@@ -102,15 +97,11 @@ class Router:
                 data_origin = msg_len + typ_len
                 sock.send(data)
                 print("The received data is ", data, 'the length is', len(data))
-                #@todo 还要将ip地址的处理加上去
-                #@todo 根据包的类型，到底是兴趣包，还是数据包
-                #@todo 如果是兴趣包，新开一个socket，同时要改变表项
-                #@todo 如果是数据包，同样要做相应处理
+                #@todo 如果包的类型和content name都对上的话，就把数据包发给router
             except:
                 print("Failed to unpack the packet length")
 
     def _run(self):
-        #todo 对于新来的socket，开一个线程，进行计时，如果超时没有收到另一个方向发回来的包，就关闭这个线程, 其中也有对pit表的处理
         self._bind_socket()
         while True:
             """
@@ -146,4 +137,4 @@ class Router:
                             continue
 
 
-r = Router(_HOST, _PORT)
+p = Publisher(_HOST, _PORT)

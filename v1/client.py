@@ -27,13 +27,14 @@ while True:
     for socks in read_sockets:
         if socks == server:
             message = socks.recv(2048)
-            print(message)
+            print("The received message is: ", message)
         else:
+            #@todo 发送消息加上一个ip地址
             message = sys.stdin.readline()
             message = struct.pack('>I', len(message)) + \
                       struct.pack('>I', 1) + message
             server.send(message)
-            sys.stdout.write("<You>")
+            sys.stdout.write("Send the message: ")
             sys.stdout.write(message)
             sys.stdout.flush()
 server.close()
