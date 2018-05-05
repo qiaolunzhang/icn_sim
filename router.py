@@ -68,20 +68,24 @@ class Router(threading.Thread):
         # If the message has the 4 bytes representing the length...
         if msg_len:
             data = ''
-            # Unpacks the message and gets the message length
-            msg_len = struct.unpack('>I', msg_len)[0]
-            tot_data_len = 0
-            while tot_data_len < msg_len:
-                # Retrieves the chunk i-th chunk of RECV_BUFFER size
-                chunk = sock.recv(self.RECV_BUFFER)
-                # If there isn't the expected chunk...
-                if not chunk:
-                    data = None
-                    break # ... Simply breaks the loop
-                else:
-                    # Merges the chunks content
-                    data += chunk
-                    tot_data_len += len(chunk)
+            try:
+                # Unpacks the message and gets the message length
+                msg_len = struct.unpack('>I', msg_len)[0]
+                tot_data_len = 0
+                while tot_data_len < msg_len:
+                    # Retrieves the chunk i-th chunk of RECV_BUFFER size
+                    chunk = sock.recv(self.RECV_BUFFER)
+                    # If there isn't the expected chunk...
+                    if not chunk:
+                        data = None
+                        break # ... Simply breaks the loop
+                    else:
+                        # Merges the chunks content
+                        data += chunk
+                        tot_data_len += len(chunk)
+            except:
+                print("Failed to unpack the packet")
+
         return data
 
 
