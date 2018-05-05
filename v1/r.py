@@ -65,11 +65,13 @@ class Router:
         msg_len = 0
         typ_len = 0
 
+        # 得到数据包的总长度
         while tot_len < self.RECV_MSG_LEN:
             msg_len = sock.recv(self.RECV_MSG_LEN)
             tot_len += len(msg_len)
         tot_len = 0
         print("ok to get msg_len")
+        # 得到数据包的类型
         while tot_len < self.RECV_MSG_TYPE_LEN:
             typ_len = sock.recv(self.RECV_MSG_TYPE_LEN)
             tot_len += len(typ_len)
@@ -84,9 +86,9 @@ class Router:
             data = ''
             try:
                 # Unpacks the message and gets the message length
-                msg_len = struct.unpack('>I', msg_len)[0]
+                msg_len_unpack = struct.unpack('>I', msg_len)[0]
                 tot_data_len = 0
-                while tot_data_len < msg_len:
+                while tot_data_len < msg_len_unpack:
                     # Retrieves the chunk i-th chunk of RECV_BUFFER size
                     chunk = sock.recv(self.RECV_BUFFER)
                     # If there isn't the expected chunk...
@@ -97,7 +99,8 @@ class Router:
                         # Merges the chunks content
                         data += chunk
                         tot_data_len += len(chunk)
-                data = data[0:msg_len]
+                # 原始的整个数据包
+                data_origin = msg_len + typ_len
                 print("The received data is ", data, 'the length is', len(data))
             except:
                 print("Failed to unpack the packet length")
