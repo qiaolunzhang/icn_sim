@@ -97,6 +97,7 @@ class Router:
                         # Merges the chunks content
                         data += chunk
                         tot_data_len += len(chunk)
+                data = data[0:msg_len]
                 print("The received data is ", data, 'the length is', len(data))
             except:
                 print("Failed to unpack the packet length")
