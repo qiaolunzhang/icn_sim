@@ -124,6 +124,7 @@ class Router:
                                 self.connections.append(client_socket)
                                 print "Client (%s, %s) connected" % client_address
                         # ... else is an incoming client socket connection
+                    else:
                         try:
                             #next_route_ip, data = self._receive(sock)
                             self._receive(sock)
