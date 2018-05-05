@@ -74,6 +74,12 @@ class Router:
             typ_len = sock.recv(self.RECV_MSG_TYPE_LEN)
             tot_len += len(typ_len)
         print("ok to get typ_len")
+        if typ_len:
+            try:
+                packet_type = struct.unpack('>I', typ_len)[0]
+                print("The package type is ", packet_type)
+            except:
+                print("Failed to unpack the package type")
         if msg_len:
             data = ''
             try:
@@ -93,7 +99,7 @@ class Router:
                         tot_data_len += len(chunk)
                 print("The received data is ", data)
             except:
-                print("Failed to unpack the packet")
+                print("Failed to unpack the packet length")
 
     def _run(self):
         #todo 对于新来的socket，开一个线程，进行计时，如果超时没有收到另一个方向发回来的包，就关闭这个线程
