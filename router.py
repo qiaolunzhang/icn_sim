@@ -62,6 +62,7 @@ class Router(threading.Thread):
         data = None
         # Retrieves the first 4 bytes from the message
         tot_len = 0
+        msg_len = 0
         while tot_len < self.RECV_MSG_LEN:
             msg_len = sock.recv(self.RECV_MSG_LEN)
             tot_len += len(msg_len)

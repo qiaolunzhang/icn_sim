@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import select
 import socket
+import struct
 
 _HOST = '127.0.0.1'
 _PORT = 10000
@@ -10,6 +11,7 @@ class Router:
     MAX_WAITING_CONNECTIONS = 100
     RECV_BUFFER = 4096
     RECV_MSG_LEN = 4
+    RECV_MSG_TYPE_LEN = 4
 
     def __init__(self, host, port):
         # store the fib form
@@ -49,6 +51,47 @@ class Router:
         self.server_socket.listen(self.MAX_WAITING_CONNECTIONS)
         self.connections.append(self.server_socket)
 
+    def _receive(self, sock):
+        """
+        first get length
+        then get type
+        process
+        :return:
+        """
+        #@todo send the data to the next route
+        data = None
+        # Retrieves the first 4 bytes form message
+        tot_len = 0
+        msg_len = 0
+        typ_len = 0
+        while tot_len < self.RECV_MSG_LEN:
+            msg_len = sock.recv(self.RECV_MSG_LEN)
+            tot_len += len(msg_len)
+        tot_len = 0
+        while tot_len < self.RECV_MSG_TYPE_LEN:
+            typ_len = sock.recv(self.RECV_MSG_TYPE_LEN)
+            tot_len += len(typ_len)
+        if msg_len:
+            data = ''
+            try:
+                # Unpacks the message and gets the message length
+                msg_len = struct.unpack('>I', msg_len)[0]
+                tot_data_len = 0
+                while tot_data_len < msg_len:
+                    # Retrieves the chunk i-th chunk of RECV_BUFFER size
+                    chunk = sock.recv(self.RECV_BUFFER)
+                    # If there isn't the expected chunk...
+                    if not chunk:
+                        data = None
+                        break # ... Simply breaks the loop
+                    else:
+                        # Merges the chunks content
+                        data += chunk
+                        tot_data_len += len(chunk)
+                print("The received data is ", data)
+            except:
+                print("Failed to unpack the packet")
+
     def _run(self):
         #todo 对于新来的socket，开一个线程，进行计时，如果超时没有收到另一个方向发回来的包，就关闭这个线程
         self._bind_socket()
@@ -74,8 +117,16 @@ class Router:
                             else:
                                 self.connections.append(client_socket)
                                 print "Client (%s, %s) connected" % client_address
-                                message = client_socket.recv(2048)
-                                print(message)
+                        # ... else is an incoming client socket connection
+                        try:
+                            #next_route_ip, data = self._receive(sock)
+                            self._receive(sock)
+                        except socket.error:
+                            #print("Client is offline" % client_address)
+                            sock.close()
+                            self.connections.remove(sock)
+                            continue
+
 
 
         #@todo 下面这个可以先放着

@@ -33,7 +33,8 @@ while True:
             print(message)
         else:
             message = sys.stdin.readline()
-            message = struct.pack('>I', len(message)) + message
+            message = struct.pack('>I', len(message)) + \
+                      struct.pack('>I', 1) + message
             server.send(message)
             sys.stdout.write("<You>")
             sys.stdout.write(message)
