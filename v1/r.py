@@ -68,9 +68,11 @@ class Router:
             msg_len = sock.recv(self.RECV_MSG_LEN)
             tot_len += len(msg_len)
         tot_len = 0
+        print("ok to get msg_len")
         while tot_len < self.RECV_MSG_TYPE_LEN:
             typ_len = sock.recv(self.RECV_MSG_TYPE_LEN)
             tot_len += len(typ_len)
+        print("ok to get typ_len")
         if msg_len:
             data = ''
             try:
