@@ -85,6 +85,7 @@ class Router:
                 print("The package type is ", packet_type)
             except:
                 print("Failed to unpack the package type")
+                return
         # 如果包里头没有内容，那就并不做处理
         if msg_content:
             data = ''
@@ -109,7 +110,7 @@ class Router:
                 print("The received data is ", data, 'the length is', len(data))
                 #@todo 还要将ip地址的处理加上去
                 #@todo 根据包的类型，到底是兴趣包，还是数据包
-                self._process_packet(typ_content, data_origin, data)
+                self._process_packet(packet_type, data_origin, data)
                 #@todo 如果是兴趣包，新开一个socket，同时要改变表项
                 #@todo 如果是数据包，同样要做相应处理
             except:
@@ -122,6 +123,7 @@ class Router:
                 sock_client.connect((self.fib_dic[data], 10000))
                 sock_client.send(data_origin)
                 self.out_connections.append(sock_client)
+                print("Send the packet to ", self.fib_dic[data])
             except:
                 pass
         elif typ_content == 2:

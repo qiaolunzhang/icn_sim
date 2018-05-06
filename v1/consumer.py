@@ -40,10 +40,6 @@ while True:
         if socks == server:
             message = socks.recv(2048)
             print("The received message is: ", message)
-            content_name = '/aueb.gr/'
-            message = struct.pack('>I', len(message)) + \
-                      struct.pack('>I', 1) + message
-            server.send(message)
         else:
             message = sys.stdin.readline()
             message = struct.pack('>I', len(message)) + \
