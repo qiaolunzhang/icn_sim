@@ -10,7 +10,7 @@ _PORT = 10000
 class Router:
     MAX_WAITING_CONNECTIONS = 100
     RECV_BUFFER = 4096
-    RECV_MSG_LEN = 4
+    RECV_msg_content = 4
     RECV_MSG_TYPE_LEN = 4
 
     def __init__(self, host, port):
@@ -24,6 +24,7 @@ class Router:
         self.host = host
         self.port = port
         self.connections = [] # collects all the incoming connections
+        self.out_connections = [] # collects all the outcoming connections
         self.load_config()
         self._run()
 
@@ -61,33 +62,34 @@ class Router:
         data = None
         # Retrieves the first 4 bytes form message
         tot_len = 0
-        msg_len = 0
-        typ_len = 0
+        msg_content = 0
+        typ_content = 0
 
         # 得到数据包的总长度
-        while tot_len < self.RECV_MSG_LEN:
-            msg_len = sock.recv(self.RECV_MSG_LEN)
-            tot_len += len(msg_len)
+        while tot_len < self.RECV_msg_content:
+            msg_content = sock.recv(self.RECV_msg_content)
+            tot_len += len(msg_content)
         tot_len = 0
-        print("ok to get msg_len")
+        print("The length of data is ", len(msg_content))
         # 得到数据包的类型
         while tot_len < self.RECV_MSG_TYPE_LEN:
-            typ_len = sock.recv(self.RECV_MSG_TYPE_LEN)
-            tot_len += len(typ_len)
-        print("ok to get typ_len")
-        if typ_len:
+            typ_content = sock.recv(self.RECV_MSG_TYPE_LEN)
+            tot_len += len(typ_content)
+        print("The type of the packet is ", typ_content)
+        if typ_content:
             try:
-                packet_type = struct.unpack('>I', typ_len)[0]
+                packet_type = struct.unpack('>I', typ_content)[0]
                 print("The package type is ", packet_type)
             except:
                 print("Failed to unpack the package type")
-        if msg_len:
+        # 如果包里头没有内容，那就并不做处理
+        if msg_content:
             data = ''
             try:
                 # Unpacks the message and gets the message length
-                msg_len_unpack = struct.unpack('>I', msg_len)[0]
+                msg_content_unpack = struct.unpack('>I', msg_content)[0]
                 tot_data_len = 0
-                while tot_data_len < msg_len_unpack:
+                while tot_data_len < msg_content_unpack:
                     # Retrieves the chunk i-th chunk of RECV_BUFFER size
                     chunk = sock.recv(self.RECV_BUFFER)
                     # If there isn't the expected chunk...
@@ -99,15 +101,28 @@ class Router:
                         data += chunk
                         tot_data_len += len(chunk)
                 # 原始的整个数据包
-                data_origin = msg_len + typ_len
+                data_origin = msg_content + typ_content
                 sock.send(data)
                 print("The received data is ", data, 'the length is', len(data))
                 #@todo 还要将ip地址的处理加上去
                 #@todo 根据包的类型，到底是兴趣包，还是数据包
+                self._process_packet(typ_content, data_origin, data)
                 #@todo 如果是兴趣包，新开一个socket，同时要改变表项
                 #@todo 如果是数据包，同样要做相应处理
             except:
                 print("Failed to unpack the packet length")
+
+    def _process_packet(self, typ_content, data_origin, data):
+        if typ_content == 1:
+            sock_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                sock_client.connect((self.fib_dic[data], 10000))
+                sock_client.send(data_origin)
+                self.out_connections.append(sock_client)
+            except:
+                pass
+        elif typ_content == 2:
+            print("Succeed to get back packet")
 
     def _run(self):
         #todo 对于新来的socket，开一个线程，进行计时，如果超时没有收到另一个方向发回来的包，就关闭这个线程, 其中也有对pit表的处理

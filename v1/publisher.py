@@ -9,7 +9,7 @@ _PORT = 10000
 class Publisher:
     MAX_WAITING_CONNECTIONS = 100
     RECV_BUFFER = 4096
-    RECV_MSG_LEN = 4
+    RECV_msg_content = 4
     RECV_MSG_TYPE_LEN = 4
 
     def __init__(self, host, port):
@@ -56,33 +56,33 @@ class Publisher:
         data = None
         # Retrieves the first 4 bytes form message
         tot_len = 0
-        msg_len = 0
-        typ_len = 0
+        msg_content = 0
+        typ_content = 0
 
         # 得到数据包的总长度
-        while tot_len < self.RECV_MSG_LEN:
-            msg_len = sock.recv(self.RECV_MSG_LEN)
-            tot_len += len(msg_len)
+        while tot_len < self.RECV_msg_content:
+            msg_content = sock.recv(self.RECV_msg_content)
+            tot_len += len(msg_content)
         tot_len = 0
-        print("ok to get msg_len")
+        print("The length of data is ", len(msg_content))
         # 得到数据包的类型
         while tot_len < self.RECV_MSG_TYPE_LEN:
-            typ_len = sock.recv(self.RECV_MSG_TYPE_LEN)
-            tot_len += len(typ_len)
-        print("ok to get typ_len")
-        if typ_len:
+            typ_content = sock.recv(self.RECV_MSG_TYPE_LEN)
+            tot_len += len(typ_content)
+        print("The type of the packet is ", typ_content)
+        if typ_content:
             try:
-                packet_type = struct.unpack('>I', typ_len)[0]
+                packet_type = struct.unpack('>I', typ_content)[0]
                 print("The package type is ", packet_type)
             except:
                 print("Failed to unpack the package type")
-        if msg_len:
+        if msg_content:
             data = ''
             try:
                 # Unpacks the message and gets the message length
-                msg_len_unpack = struct.unpack('>I', msg_len)[0]
+                msg_content_unpack = struct.unpack('>I', msg_content)[0]
                 tot_data_len = 0
-                while tot_data_len < msg_len_unpack:
+                while tot_data_len < msg_content_unpack:
                     # Retrieves the chunk i-th chunk of RECV_BUFFER size
                     chunk = sock.recv(self.RECV_BUFFER)
                     # If there isn't the expected chunk...
@@ -94,10 +94,18 @@ class Publisher:
                         data += chunk
                         tot_data_len += len(chunk)
                 # 原始的整个数据包
-                data_origin = msg_len + typ_len
-                sock.send(data)
+                data_origin = msg_content + typ_content
+                # sock.send(data)
                 print("The received data is ", data, 'the length is', len(data))
                 #@todo 如果包的类型和content name都对上的话，就把数据包发给router
+                try:
+                    message = self.data_dic[data]
+                    #@todo 这个时候它成为了服务器端
+                    message = struct.pack('>I', len(message)) + \
+                              struct.pack('>I', 1) + message
+                    sock.send(message)
+                except:
+                    pass
             except:
                 print("Failed to unpack the packet length")
 
