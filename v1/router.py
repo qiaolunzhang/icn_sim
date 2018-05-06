@@ -33,6 +33,9 @@ class Router:
             with open('./config/router.conf') as f:
                 for line in f:
                     if line[0] != '#':
+                        if line[0] == 'local_ip':
+                            self.host = line[1]
+                            self.port = line[2]
                         line = line.split()
                         self.fib_dic[line[0]] = line[1]
 
