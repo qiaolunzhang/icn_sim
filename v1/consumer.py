@@ -9,7 +9,7 @@ Port = 10000
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
-    with open('./config/router.conf') as f:
+    with open('./config/consumer.conf') as f:
         for line in f:
             if line[0] != '#':
                 line = line.split()
