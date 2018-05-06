@@ -4,9 +4,21 @@ import select
 import struct
 import sys
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 IP_address = '127.0.0.1'
 Port = 10000
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+try:
+    with open('./config/router.conf') as f:
+        for line in f:
+            if line[0] != '#':
+                line = line.split()
+                IP_address = line[0]
+                Port = line[1]
+except:
+    print("failed to load config")
+
+
 server.connect((IP_address, Port))
 
 while True:
