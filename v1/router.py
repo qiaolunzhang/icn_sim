@@ -122,9 +122,12 @@ class Router:
         if typ_content == 1:
             sock_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
-                sock_client.connect((self.fib_dic[data[:-1]], 10000))
+                #@todo 发送方有问题的话，会多一个\n
+                sock_client.connect((self.fib_dic[data], 10000))
                 sock_client.send(data_origin)
+                #@todo 如何处理和router之间的数据，如果有连接了，两次收到相同的包会如何
                 self.out_connections.append(sock_client)
+                #sock_client.close()
                 print("Send the packet to ", self.fib_dic[data])
             except Exception, e:
                 print(Exception, ", ", e)

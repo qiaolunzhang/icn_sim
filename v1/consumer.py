@@ -42,10 +42,12 @@ while True:
             print("The received message is: ", message)
         else:
             message = sys.stdin.readline()
+            message = message[:-1]
             message = struct.pack('>I', len(message)) + \
                       struct.pack('>I', 1) + message
             server.send(message)
             sys.stdout.write("Send the message: ")
             sys.stdout.write(message)
+            sys.stdout.write('\n')
             sys.stdout.flush()
 server.close()
