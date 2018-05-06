@@ -122,7 +122,7 @@ class Router:
         if typ_content == 1:
             sock_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
-                sock_client.connect((self.fib_dic[data], 10000))
+                sock_client.connect((self.fib_dic[data[:-1]], 10000))
                 sock_client.send(data_origin)
                 self.out_connections.append(sock_client)
                 print("Send the packet to ", self.fib_dic[data])
