@@ -118,6 +118,7 @@ class Router:
                 print("Failed to unpack the packet length")
 
     def _process_packet(self, typ_content, data_origin, data):
+        print("\nNow process the packet type: ", typ_content)
         if typ_content == 1:
             sock_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
@@ -125,8 +126,8 @@ class Router:
                 sock_client.send(data_origin)
                 self.out_connections.append(sock_client)
                 print("Send the packet to ", self.fib_dic[data])
-            except:
-                pass
+            except Exception, e:
+                print(Exception, ", ", e)
         elif typ_content == 2:
             print("Succeed to get back packet")
 
