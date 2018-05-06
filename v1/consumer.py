@@ -14,7 +14,7 @@ try:
             if line[0] != '#':
                 line = line.split()
                 IP_address = line[0]
-                Port = line[1]
+                Port = int(line[1])
 except:
     print("failed to load config")
 
