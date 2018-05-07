@@ -30,9 +30,8 @@ class Publisher:
                         line = line.split()
                         self.data_dic[line[0]] = line[1]
 
-            #print(self.fib_dic)
-        except:
-            print("Failed to load the config file")
+        except Exception, e:
+            print(Exception, ", ", e)
             raise SystemExit
 
     def _bind_socket(self):
@@ -94,8 +93,7 @@ class Publisher:
                         data += chunk
                         tot_data_len += len(chunk)
                 # 原始的整个数据包
-                data_origin = msg_content + typ_content
-                # sock.send(data)
+                data_origin = msg_content + typ_content + data
                 print("The received data is ", data, 'the length is', len(data))
                 #@todo 如果包的类型和content name都对上的话，就把数据包发给router
                 try:
@@ -104,10 +102,11 @@ class Publisher:
                     message = struct.pack('>I', len(message)) + \
                               struct.pack('>I', 1) + message
                     sock.send(message)
-                except:
-                    pass
-            except:
+                except Exception, e:
+                    print(Exception, ", ", e)
+            except Exception, e:
                 print("Failed to unpack the packet length")
+                print(Exception, ", ", e)
 
     def _run(self):
         self._bind_socket()
