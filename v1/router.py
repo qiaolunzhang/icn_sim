@@ -107,7 +107,7 @@ class Router:
                         data += chunk
                         tot_data_len += len(chunk)
                 # 原始的整个数据包
-                data_origin = msg_content + typ_content
+                data_origin = msg_content + typ_content + data
                 sock.send(data)
                 print("The received data is ", data, 'the length is', len(data))
                 self._process_packet(packet_type, data_origin, data)
