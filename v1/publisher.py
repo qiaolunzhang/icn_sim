@@ -102,8 +102,6 @@ class Publisher:
                     f = open(data_location, 'rb')
                     message = ''
                     l = f.read(1024)
-                    s = socket.socket()
-                    s.connect(("localhost", 9999))
                     while (l):
                         message = message + l
                         l = f.read(1024)
