@@ -25,7 +25,8 @@ class Router:
         self.host = host
         self.port = port
         self.connections = [] # collects all the incoming connections
-        self.out_connections = [] # collects all the outcoming connections
+        self.out_conn_dic = {} # collects all the outcoming connections
+        self.ip_to_sock_dic = {}
         self.load_config()
         self._run()
 
@@ -109,30 +110,39 @@ class Router:
                 data_origin = msg_content + typ_content
                 sock.send(data)
                 print("The received data is ", data, 'the length is', len(data))
-                #@todo 还要将ip地址的处理加上去
-                #@todo 根据包的类型，到底是兴趣包，还是数据包
                 self._process_packet(packet_type, data_origin, data)
-                #@todo 如果是兴趣包，新开一个socket，同时要改变表项
-                #@todo 如果是数据包，同样要做相应处理
             except:
                 print("Failed to unpack the packet length")
 
     def _process_packet(self, typ_content, data_origin, data):
         print("\nNow process the packet type: ", typ_content)
         if typ_content == 1:
-            sock_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # 如果cs表里头有那么就直接发
+            if data in self.cs_dic.keys():
+                #@todo 处理cs表
+                pass
+            # 如果pit表里头请求过
+            if data in self.pit_dic.keys():
+                return
+            # 如果都没有
             try:
-                #@todo 发送方有问题的话，会多一个\n
-                sock_client.connect((self.fib_dic[data], 10000))
-                sock_client.send(data_origin)
-                #@todo 如何处理和router之间的数据，如果有连接了，两次收到相同的包会如何
-                self.out_connections.append(sock_client)
-                self.connections.append(sock_client)
-                #sock_client.close()
-                print("Send the packet to ", self.fib_dic[data])
+                next_hop_ip = self.fib_dic[data]
+                if next_hop_ip in self.out_conn_dic.keys():
+                    self.out_conn_dic[next_hop_ip].send(data_origin)
+                else:
+                    sock_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    sock_client.connect((self.fib_dic[data], 10000))
+
+                    self.out_conn_dic[next_hop_ip] = sock_client
+                    self.ip_to_sock_dic[next_hop_ip] = sock_client
+                    self.connections.append(sock_client)
+
+                    sock_client.send(data_origin)
+                    print("Send the packet to ", self.fib_dic[data])
             except Exception, e:
                 print(Exception, ", ", e)
         elif typ_content == 2:
+            #@todo 检查各个表，重新发送信息
             print("Succeed to get back packet")
 
     def _run(self):
@@ -155,6 +165,7 @@ class Router:
                             try:
                                 # Handles a new client connection
                                 client_socket, client_address = self.server_socket.accept()
+                                self.ip_to_sock_dic[client_address] = client_socket
                             except socket.error:
                                 break
                             else:
