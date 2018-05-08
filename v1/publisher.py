@@ -98,8 +98,19 @@ class Publisher:
                 print("The received data is ", data, 'the length is', len(data))
                 #@todo 如果包的类型和content name都对上的话，就把数据包发给router
                 try:
-                    message = self.data_dic[data]
+                    data_location = self.data_dic[data]
+                    f = open(data_location, 'rb')
+                    message = ''
+                    l = f.read(1024)
+                    s = socket.socket()
+                    s.connect(("localhost", 9999))
+                    while (l):
+                        message = message + l
+                        l = f.read(1024)
+                    f.close()
+
                     #@todo 这个时候它成为了服务器端
+                    #@todo 读取文件中的内容
                     message = struct.pack('>I', len(message)) + \
                               struct.pack('>I', 1) + message
                     sock.send(message)
