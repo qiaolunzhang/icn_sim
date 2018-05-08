@@ -3,7 +3,8 @@ import select
 import socket
 import struct
 
-_HOST = '127.0.0.1'
+#_HOST = '127.0.0.1'
+_HOST = '192.168.80.134'
 _PORT = 10000
 
 class Publisher:

@@ -127,6 +127,7 @@ class Router:
                 sock_client.send(data_origin)
                 #@todo 如何处理和router之间的数据，如果有连接了，两次收到相同的包会如何
                 self.out_connections.append(sock_client)
+                self.connections.append(sock_client)
                 #sock_client.close()
                 print("Send the packet to ", self.fib_dic[data])
             except Exception, e:
