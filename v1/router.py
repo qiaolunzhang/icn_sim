@@ -120,7 +120,7 @@ class Router:
             # 如果cs表里头有那么就直接发
             if data in self.cs_dic.keys():
                 #@todo 处理cs表
-                pass
+                return
             # 如果pit表里头请求过
             if data in self.pit_dic.keys():
                 return
@@ -141,6 +141,8 @@ class Router:
                     print("Send the packet to ", self.fib_dic[data])
             except Exception, e:
                 print(Exception, ", ", e)
+
+            print("\n****************************************************\n")
         elif typ_content == 2:
             #@todo 检查各个表，重新发送信息
             print("Succeed to get back packet")
@@ -165,7 +167,7 @@ class Router:
                             try:
                                 # Handles a new client connection
                                 client_socket, client_address = self.server_socket.accept()
-                                self.ip_to_sock_dic[client_address] = client_socket
+                                self.ip_to_sock_dic[client_address[0]] = client_socket
                             except socket.error:
                                 break
                             else:
