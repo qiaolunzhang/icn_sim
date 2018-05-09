@@ -119,6 +119,7 @@ class Publisher:
             except Exception, e:
                 print("Failed to unpack the packet length")
                 print(Exception, ", ", e)
+        print("\n**********************************************\n")
 
     def _run(self):
         self._bind_socket()
