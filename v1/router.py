@@ -157,8 +157,10 @@ class Router:
                     message = struct.pack('>I', len(message)) + \
                               struct.pack('>I', 2) + message
                     sock.send(message)
+                    return
                 except Exception, e:
                     print(Exception, ", ", e)
+                    return
 
             # 如果pit表里头请求过
             #@todo 需要解决多次请求问题，同一个客户端多次请求，以及不同客户端的再次请求,那么pit表里头放得就是一个列表了
