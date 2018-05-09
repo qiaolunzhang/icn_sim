@@ -203,10 +203,11 @@ class Router:
                     f = open(file_name, 'wb')
                     f.write(content)
                     f.close()
-                    #@todo 改变对应表项
+                    # cs_dic内添加已经缓存的内容
                     self.cs_dic[content_name] = file_name
-                    #@todo 发送给请求方
+                    # 发送给请求方
                     self.pit_dic[content_name].send(data_origin)
+                    # pit_dic删除已经获得的内容发送给请求方
                     del self.pit_dic[content_name]
                 else:
                     return
