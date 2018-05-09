@@ -48,7 +48,8 @@ class Router:
                         self.fib_dic[line[0]] = line[1]
 
             #print(self.fib_dic)
-        except:
+        except Exception, e:
+            print(Exception, ", ", e)
             print("Failed to load the config file")
             raise SystemExit
 
