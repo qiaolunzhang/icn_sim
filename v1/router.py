@@ -15,6 +15,8 @@ class Router:
     RECV_MSG_TYPE_LEN = 4
 
     def __init__(self, host, port):
+        # 用于保存文件名
+        self.file_number = 1
         # store the fib form
         self.fib_dic = {}
         # store the pit form
@@ -111,19 +113,39 @@ class Router:
                 data_origin = msg_content + typ_content + data
                 # sock.send(data)
                 print("The received data is ", data, 'the length is', len(data))
-                self._process_packet(packet_type, data_origin, data)
+                self._process_packet(sock, packet_type, data_origin, data)
             except Exception, e:
                 print(Exception, ", ", e)
                 print("Failed to unpack the packet length")
 
-    def _process_packet(self, typ_content, data_origin, data):
+    def _process_packet(self, sock, typ_content, data_origin, data):
         print("\nNow process the packet type: ", typ_content)
         if typ_content == 1:
             # 如果cs表里头有那么就直接发
             if data in self.cs_dic.keys():
-                #@todo 处理cs表
-                return
+                # 如果cs表里头有，那么直接读取，然后返回
+                try:
+                    data_location = self.cs_dic[data]
+                    f = open(data_location, 'rb')
+                    message = ''
+                    l = f.read(1024)
+                    while (l):
+                        message = message + l
+                        l = f.read(1024)
+                    f.close()
+
+                    content_name = data
+                    content_len = struct.pack('>I', len(content_name))
+                    message = content_len + content_name + message
+
+                    message = struct.pack('>I', len(message)) + \
+                              struct.pack('>I', 2) + message
+                    sock.send(message)
+                except Exception, e:
+                    print(Exception, ", ", e)
+
             # 如果pit表里头请求过
+            #@todo 需要解决多次请求问题，同一个客户端多次请求，以及不同客户端的再次请求,那么pit表里头放得就是一个列表了
             if data in self.pit_dic.keys():
                 return
             # 如果都没有
@@ -141,6 +163,8 @@ class Router:
 
                     sock_client.send(data_origin)
                     print("Send the packet to ", self.fib_dic[data])
+                # 然后改变pit表
+                self.pit_dic[data] = sock
             except Exception, e:
                 print(Exception, ", ", e)
 
@@ -153,6 +177,22 @@ class Router:
                 print("Content name length is ", content_name_len)
                 content_name = data[4: 4 + content_name_len]
                 print("Content name is ", content_name)
+                content = data[4 + content_name_len : ]
+                if content_name in self.pit_dic.keys():
+                    # 缓存
+                    file_name = 'file_' + str(self.file_number)
+                    self.file_number = self.file_number + 1
+                    f = open(file_name, 'wb')
+                    f.write(content)
+                    f.close()
+                    #@todo 改变对应表项
+                    self.cs_dic[content_name] = file_name
+                    #@todo 发送给请求方
+                    self.pit_dic[content_name].send(data_origin)
+                    del self.pit_dic[content_name]
+                else:
+                    return
+
             except Exception, e:
                 print(Exception, ", ", e)
 
