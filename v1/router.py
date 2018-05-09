@@ -2,6 +2,7 @@
 import select
 import socket
 import struct
+import os
 
 #_HOST = '127.0.0.1'
 _HOST = '192.168.80.135'
@@ -33,7 +34,10 @@ class Router:
         self._run()
 
     def load_config(self):
+
         try:
+            if not os._exists('./cache'):
+                os.mkdir('./cache')
             with open('./config/router.conf') as f:
                 for line in f:
                     if line[0] != '#':
@@ -180,7 +184,7 @@ class Router:
                 content = data[4 + content_name_len : ]
                 if content_name in self.pit_dic.keys():
                     # 缓存
-                    file_name = 'file_' + str(self.file_number)
+                    file_name = './cache/file_' + str(self.file_number)
                     self.file_number = self.file_number + 1
                     f = open(file_name, 'wb')
                     f.write(content)
