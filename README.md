@@ -18,5 +18,5 @@ simulating icn in lab
 Read the file *router.config*，get the content for FIB
 The format of *router.config* is as follows:
 
-/aueb.gr/   ip_addr1
-/aueb.gr/cs ip_addr2
+- /aueb.gr/   ip_addr1
+- /aueb.gr/cs ip_addr2
