@@ -109,7 +109,7 @@ class Router:
                         tot_data_len += len(chunk)
                 # 原始的整个数据包
                 data_origin = msg_content + typ_content + data
-                sock.send(data)
+                # sock.send(data)
                 print("The received data is ", data, 'the length is', len(data))
                 self._process_packet(packet_type, data_origin, data)
             except Exception, e:
@@ -151,7 +151,7 @@ class Router:
             try:
                 content_name_len = struct.unpack('>I', content_name_len_pack)[0]
                 print("Content name length is ", content_name_len)
-                content_name = data[4: content_name_len]
+                content_name = data[4: 4 + content_name_len]
                 print("Content name is ", content_name)
             except Exception, e:
                 print(Exception, ", ", e)
