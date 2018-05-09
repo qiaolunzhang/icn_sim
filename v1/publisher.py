@@ -107,6 +107,10 @@ class Publisher:
                         l = f.read(1024)
                     f.close()
 
+                    content_name = data
+                    content_len = struct.pack('>I', len(content_name))
+                    message = content_len + content_name + message
+
                     message = struct.pack('>I', len(message)) + \
                               struct.pack('>I', 2) + message
                     sock.send(message)

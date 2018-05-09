@@ -85,7 +85,8 @@ class Router:
             try:
                 packet_type = struct.unpack('>I', typ_content)[0]
                 print("The package type is ", packet_type)
-            except:
+            except Exception, e:
+                print(Exception, ", ", e)
                 print("Failed to unpack the package type")
                 return
         # 如果包里头没有内容，那就并不做处理
@@ -111,7 +112,8 @@ class Router:
                 sock.send(data)
                 print("The received data is ", data, 'the length is', len(data))
                 self._process_packet(packet_type, data_origin, data)
-            except:
+            except Exception, e:
+                print(Exception, ", ", e)
                 print("Failed to unpack the packet length")
 
     def _process_packet(self, typ_content, data_origin, data):
@@ -144,8 +146,15 @@ class Router:
 
             print("\n****************************************************\n")
         elif typ_content == 2:
-            #@todo 检查各个表，重新发送信息
             print("Succeed to get back packet")
+            content_name_len_pack = data[:4]
+            try:
+                content_name_len = struct.unpack('>I', content_name_len_pack)[0]
+                print("Content name length is ", content_name_len)
+                content_name = data[4: content_name_len]
+                print("Content name is ", content_name)
+            except Exception, e:
+                print(Exception, ", ", e)
 
     def _run(self):
         #todo 对于新来的socket，开一个线程，进行计时，如果超时没有收到另一个方向发回来的包，就关闭这个线程, 其中也有对pit表的处理
