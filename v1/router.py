@@ -127,7 +127,15 @@ class Router:
                 print("Failed to unpack the packet length")
 
     def _process_packet(self, sock, typ_content, data_origin, data):
-        print("\nNow process the packet type: ", typ_content)
+        print("\n")
+        print("Now process the packet type: ", typ_content)
+        print("The pit table is: \n")
+        print(self.pit_dic)
+        print("\n")
+        print("The cs table is: \n")
+        print(self.cs_dic)
+
+        print()
         if typ_content == 1:
             # 如果cs表里头有那么就直接发
             if data in self.cs_dic.keys():
@@ -201,8 +209,10 @@ class Router:
                 else:
                     return
 
+                print("\n****************************************************\n")
             except Exception, e:
                 print(Exception, ", ", e)
+                print("\n****************************************************\n")
 
     def _run(self):
         #todo 对于新来的socket，开一个线程，进行计时，如果超时没有收到另一个方向发回来的包，就关闭这个线程, 其中也有对pit表的处理
