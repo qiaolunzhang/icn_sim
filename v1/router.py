@@ -34,10 +34,7 @@ class Router:
         self._run()
 
     def load_config(self):
-
         try:
-            if not os._exists('./cache'):
-                os.mkdir('./cache')
             with open('./config/router.conf') as f:
                 for line in f:
                     if line[0] != '#':
@@ -52,6 +49,12 @@ class Router:
             print(Exception, ", ", e)
             print("Failed to load the config file")
             raise SystemExit
+
+        try:
+            if not os._exists('./cache/'):
+                os.mkdir('./cache')
+        except:
+            return
 
     def _bind_socket(self):
         """
