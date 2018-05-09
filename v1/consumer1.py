@@ -81,7 +81,7 @@ class Consumer:
                 print(Exception, ", ", e)
                 print("Failed to unpack the package type")
 
-        if typ_content != 2:
+        if packet_type != 2:
             return
 
         if msg_content:
