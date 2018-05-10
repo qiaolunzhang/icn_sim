@@ -33,12 +33,6 @@ class Router:
         self.load_config()
         self._run()
 
-    def init_firewall(self):
-        self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_socket.connect(('127.0.0.1', 5251))
-        self.server_socket.send(5000)
-
     def load_config(self):
         try:
             with open('./config/router.conf') as f:

@@ -2,65 +2,38 @@
 import select
 import socket
 import struct
-import os
 
 #_HOST = '127.0.0.1'
-_HOST = '192.168.80.135'
+_HOST = '192.168.80.134'
 _PORT = 10000
 
-
-class Router:
+class Publisher:
     MAX_WAITING_CONNECTIONS = 100
     RECV_BUFFER = 4096
     RECV_msg_content = 4
     RECV_MSG_TYPE_LEN = 4
 
     def __init__(self, host, port):
-        # 用于保存文件名
-        self.file_number = 1
-        # store the fib form
-        self.fib_dic = {}
-        # store the pit form
-        self.pit_dic = {}
-        # store the cs form
-        self.cs_dic = {}
+        # store the data
+        self.data_dic = {}
 
         self.host = host
         self.port = port
         self.connections = [] # collects all the incoming connections
-        self.out_conn_dic = {} # collects all the outcoming connections
-        self.ip_to_sock_dic = {}
         self.load_config()
         self._run()
 
-    def init_firewall(self):
-        self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_socket.connect(('127.0.0.1', 5251))
-        self.server_socket.send(5000)
-
     def load_config(self):
         try:
-            with open('./config/router.conf') as f:
+            with open('./config/publisher.conf') as f:
                 for line in f:
                     if line[0] != '#':
-                        if line[0] == 'local_ip':
-                            self.host = line[1]
-                            self.port = line[2]
                         line = line.split()
-                        self.fib_dic[line[0]] = line[1]
+                        self.data_dic[line[0]] = line[1]
 
-            #print(self.fib_dic)
         except Exception, e:
             print(Exception, ", ", e)
-            print("Failed to load the config file")
             raise SystemExit
-
-        try:
-            if not os._exists('./cache/'):
-                os.mkdir('./cache')
-        except:
-            return
 
     def _bind_socket(self):
         """
@@ -101,11 +74,8 @@ class Router:
             try:
                 packet_type = struct.unpack('>I', typ_content)[0]
                 print("The package type is ", packet_type)
-            except Exception, e:
-                print(Exception, ", ", e)
+            except:
                 print("Failed to unpack the package type")
-                return
-        # 如果包里头没有内容，那就并不做处理
         if msg_content:
             data = ''
             try:
@@ -125,29 +95,10 @@ class Router:
                         tot_data_len += len(chunk)
                 # 原始的整个数据包
                 data_origin = msg_content + typ_content + data
-                # sock.send(data)
                 print("The received data is ", data, 'the length is', len(data))
-                self._process_packet(sock, packet_type, data_origin, data)
-            except Exception, e:
-                print(Exception, ", ", e)
-                print("Failed to unpack the packet length")
-
-    def _process_packet(self, sock, typ_content, data_origin, data):
-        print("\n")
-        print("Now process the packet type: ", typ_content)
-        print("The pit table is: \n")
-        print(self.pit_dic)
-        print("\n")
-        print("The cs table is: \n")
-        print(self.cs_dic)
-
-        print()
-        if typ_content == 1:
-            # 如果cs表里头有那么就直接发
-            if data in self.cs_dic.keys():
-                # 如果cs表里头有，那么直接读取，然后返回
+                # 如果包的类型和content name都对上的话，就把数据包发给router
                 try:
-                    data_location = self.cs_dic[data]
+                    data_location = self.data_dic[data]
                     f = open(data_location, 'rb')
                     message = ''
                     l = f.read(1024)
@@ -163,68 +114,14 @@ class Router:
                     message = struct.pack('>I', len(message)) + \
                               struct.pack('>I', 2) + message
                     sock.send(message)
-                    return
                 except Exception, e:
                     print(Exception, ", ", e)
-                    return
-
-            # 如果pit表里头请求过
-            #@todo 需要解决多次请求问题，同一个客户端多次请求，以及不同客户端的再次请求,那么pit表里头放得就是一个列表了
-            if data in self.pit_dic.keys():
-                return
-            # 如果都没有
-            try:
-                next_hop_ip = self.fib_dic[data]
-                if next_hop_ip in self.out_conn_dic.keys():
-                    self.out_conn_dic[next_hop_ip].send(data_origin)
-                else:
-                    sock_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    sock_client.connect((self.fib_dic[data], 10000))
-
-                    self.out_conn_dic[next_hop_ip] = sock_client
-                    self.ip_to_sock_dic[next_hop_ip] = sock_client
-                    self.connections.append(sock_client)
-
-                    sock_client.send(data_origin)
-                    print("Send the packet to ", self.fib_dic[data])
-                # 然后改变pit表
-                self.pit_dic[data] = sock
             except Exception, e:
+                print("Failed to unpack the packet length")
                 print(Exception, ", ", e)
-
-            print("\n****************************************************\n")
-        elif typ_content == 2:
-            print("Succeed to get back packet")
-            content_name_len_pack = data[:4]
-            try:
-                content_name_len = struct.unpack('>I', content_name_len_pack)[0]
-                print("Content name length is ", content_name_len)
-                content_name = data[4: 4 + content_name_len]
-                print("Content name is ", content_name)
-                content = data[4 + content_name_len : ]
-                if content_name in self.pit_dic.keys():
-                    # 缓存
-                    file_name = './cache/file_' + str(self.file_number)
-                    self.file_number = self.file_number + 1
-                    f = open(file_name, 'wb')
-                    f.write(content)
-                    f.close()
-                    # cs_dic内添加已经缓存的内容
-                    self.cs_dic[content_name] = file_name
-                    # 发送给请求方
-                    self.pit_dic[content_name].send(data_origin)
-                    # pit_dic删除已经获得的内容发送给请求方
-                    del self.pit_dic[content_name]
-                else:
-                    return
-
-                print("\n****************************************************\n")
-            except Exception, e:
-                print(Exception, ", ", e)
-                print("\n****************************************************\n")
+        print("\n**********************************************\n")
 
     def _run(self):
-        #todo 对于新来的socket，开一个线程，进行计时，如果超时没有收到另一个方向发回来的包，就关闭这个线程, 其中也有对pit表的处理
         self._bind_socket()
         while True:
             """
@@ -243,7 +140,6 @@ class Router:
                             try:
                                 # Handles a new client connection
                                 client_socket, client_address = self.server_socket.accept()
-                                self.ip_to_sock_dic[client_address[0]] = client_socket
                             except socket.error:
                                 break
                             else:
@@ -261,4 +157,4 @@ class Router:
                             continue
 
 
-r = Router(_HOST, _PORT)
+p = Publisher(_HOST, _PORT)
