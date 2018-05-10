@@ -31,13 +31,18 @@ class Router:
         self.out_conn_dic = {} # collects all the outcoming connections
         self.ip_to_sock_dic = {}
         self.load_config()
+        self.init_firewall()
         self._run()
 
     def init_firewall(self):
-        self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_socket.connect(('127.0.0.1', 5251))
-        self.server_socket.send(5000)
+        try:
+            self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.server_socket.connect(('127.0.0.1', 5251))
+            self.server_socket.send(5000)
+            print("Initing firewall")
+        except Exception, e:
+            print(Exception, ", ", e)
 
     def load_config(self):
         try:
@@ -50,6 +55,7 @@ class Router:
                         line = line.split()
                         self.fib_dic[line[0]] = line[1]
 
+            print("Reading config")
             #print(self.fib_dic)
         except Exception, e:
             print(Exception, ", ", e)
