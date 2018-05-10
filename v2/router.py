@@ -61,7 +61,7 @@ class Router:
         try:
             self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.firewall_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.firewall_socket.connect("127.0.0.1", 5251)
+            self.firewall_socket.connect(("127.0.0.1", 5251))
             self.firewall_socket.send(5000)
         except Exception, e:
             print(Exception, ", ", e)
