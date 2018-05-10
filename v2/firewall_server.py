@@ -76,8 +76,7 @@ class ChatServer:
                     sockfd, addr = self.serverSocket.accept()
                     id = sockfd.recv(2048)
                     self.login(id,sockfd)
-                else:
-                    self.chat(sock)
+
 
     def main(self):
         self.socet_handle()
