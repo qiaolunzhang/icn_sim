@@ -31,7 +31,6 @@ class Consumer:
     def log_init(self):
         try:
             # os.path.exists("./log/consumer.log"):
-            #@todo 打开配置文件,设置为类的一个东西
             self.log_file = open("./log/consumer.log", "w+")
             self.log_file.close()
         except Exception, e:
@@ -93,9 +92,8 @@ class Consumer:
                 print(Exception, ", ", e)
                 print("Failed to unpack the package type")
 
-        if packet_type != 2:
-            #@todo 记录接受失败
-            return
+        # if packet_type != 2:
+        #    return
 
         if msg_content:
             data = ''
@@ -117,14 +115,28 @@ class Consumer:
                 # 原始的整个数据包
                 data_origin = msg_content + typ_content + data
                 print("The received data is ", data, 'the length is', len(data))
-                self._process_packet(data)
+                # 对数据包和兴趣包采取不同的方式
+                if packet_type == 1:
+                    self._process_interest_packet(data)
+                elif packet_type == 2:
+                    self._process_data_packet(data)
             except Exception, e:
                 print("Failed to unpack the packet length")
                 print(Exception, ", ", e)
         print("\n**********************************************\n")
 
 
-    def _process_packet(self, data):
+    def _process_interest_packet(self, data):
+        try:
+            # consumer收到了兴趣包, 在log文件下方附加
+            with open("./log/consumer.log", 'a+') as f:
+                packet_log = "receive " + data + ' 0 ' + '\n'
+                f.write(packet_log)
+        except Exception, e:
+            print(Exception, ", ", e)
+
+
+    def _process_data_packet(self, data):
         print("\n")
         print("Succeed to get back data packet")
         content_name_len_pack = data[:4]
@@ -136,6 +148,9 @@ class Consumer:
             content = data[4 + content_name_len : ]
             print("Get the data: ", content)
             #@todo 记录成功接受
+            with open('./log/consumer.log', 'a+') as f:
+                packet_log = "receive " + content_name + " 1 " + "\n"
+                f.write(packet_log)
         except Exception, e:
             print(Exception, ", ", e)
 
@@ -167,7 +182,12 @@ class Consumer:
                         message = struct.pack('>I', len(message)) + \
                                   struct.pack('>I', 1) + message
                         self.server_socket.send(message)
+
                         #@todo 记录发送包
+                        with open('./log/consumer.log', 'a+') as f:
+                            packet_log = "send" + message + " 1 " + "\n"
+                            f.write(packet_log)
+
                         sys.stdout.write("Send the message: ")
                         sys.stdout.write(message)
                         sys.stdout.write('\n')
