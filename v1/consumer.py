@@ -32,7 +32,7 @@ class Consumer:
         try:
             # os.path.exists("./log/consumer.log"):
             #@todo 打开配置文件,设置为类的一个东西
-            self.log_file = open("./log/consumer.log", "w")
+            self.log_file = open("./log/consumer.log", "w+")
             self.log_file.close()
         except Exception, e:
             print(Exception, ", ", e)
