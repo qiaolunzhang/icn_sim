@@ -4,7 +4,7 @@ import socket
 import select
 import struct
 import sys
-import os
+from datetime import datetime
 
 #_HOST = '192.168.80.134'
 _HOST = '127.0.0.1'
@@ -130,7 +130,8 @@ class Consumer:
         try:
             # consumer收到了兴趣包, 在log文件下方附加
             with open("./log/consumer.log", 'a+') as f:
-                packet_log = "receive " + data + ' 0 ' + '\n'
+                time_now = str(datetime.now())
+                packet_log = time_now + " receive " + data + ' 0 ' + '\n'
                 f.write(packet_log)
         except Exception, e:
             print(Exception, ", ", e)
@@ -149,7 +150,8 @@ class Consumer:
             print("Get the data: ", content)
             #@todo 记录成功接受
             with open('./log/consumer.log', 'a+') as f:
-                packet_log = "receive " + content_name + " 1 " + "\n"
+                time_now = str(datetime.now())
+                packet_log = time_now + " receive " + content_name + " 1 " + "\n"
                 f.write(packet_log)
         except Exception, e:
             print(Exception, ", ", e)

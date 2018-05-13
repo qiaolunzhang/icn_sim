@@ -22,3 +22,9 @@
 
 - 包发向的ip
 - 包的内容
+
+### Log File
+#### consumer
+*格式如下*
+时间                          发送还是接受    content_name    是否成功
+2018-05-13 19:23:41.183028    send/receive   content_name    1(成功)/0(失败)
