@@ -181,6 +181,7 @@ class Consumer:
                         # 如果是用户输入
                         message = sys.stdin.readline()
                         message = message[:-1]
+                        message_log = message
                         message = struct.pack('>I', len(message)) + \
                                   struct.pack('>I', 1) + message
                         self.server_socket.send(message)
@@ -188,7 +189,7 @@ class Consumer:
                         # 记录发送包
                         with open('./log/consumer.log', 'a+') as f:
                             time_now = str(datetime.now())
-                            packet_log = time_now + " send interest " + message + " 1 " + "\n"
+                            packet_log = time_now + " send interest " + message_log + " 1 " + "\n"
                             f.write(packet_log)
 
                         sys.stdout.write("Send the message: ")
