@@ -153,7 +153,7 @@ class Router:
                 # consumer收到了兴趣包, 在log文件下方附加
                 with open("./log/router.log", 'a+') as f:
                     time_now = str(datetime.now())
-                    packet_log = time_now + " receive interest" + data + ' 1 ' + '\n'
+                    packet_log = time_now + " receive interest " + data + ' 1 ' + '\n'
                     f.write(packet_log)
             except Exception, e:
                 print(Exception, ", ", e)
