@@ -131,7 +131,7 @@ class Consumer:
             # consumer收到了兴趣包, 在log文件下方附加
             with open("./log/consumer.log", 'a+') as f:
                 time_now = str(datetime.now())
-                packet_log = time_now + " receive " + data + ' 0 ' + '\n'
+                packet_log = time_now + " receive interest " + data + ' 0 ' + '\n'
                 f.write(packet_log)
         except Exception, e:
             print(Exception, ", ", e)
@@ -148,10 +148,10 @@ class Consumer:
             print("Content name is ", content_name)
             content = data[4 + content_name_len : ]
             print("Get the data: ", content)
-            #@todo 记录成功接受
+            # 记录成功接受
             with open('./log/consumer.log', 'a+') as f:
                 time_now = str(datetime.now())
-                packet_log = time_now + " receive " + content_name + " 1 " + "\n"
+                packet_log = time_now + " receive data " + content_name + " 1 " + "\n"
                 f.write(packet_log)
         except Exception, e:
             print(Exception, ", ", e)
@@ -185,9 +185,10 @@ class Consumer:
                                   struct.pack('>I', 1) + message
                         self.server_socket.send(message)
 
-                        #@todo 记录发送包
+                        # 记录发送包
                         with open('./log/consumer.log', 'a+') as f:
-                            packet_log = "send" + message + " 1 " + "\n"
+                            time_now = str(datetime.now())
+                            packet_log = time_now + " send interest " + message + " 1 " + "\n"
                             f.write(packet_log)
 
                         sys.stdout.write("Send the message: ")

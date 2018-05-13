@@ -3,6 +3,7 @@ import select
 import socket
 import struct
 import os
+from datetime import datetime
 
 #_HOST = '127.0.0.1'
 _HOST = '192.168.80.135'
@@ -31,7 +32,17 @@ class Router:
         self.out_conn_dic = {} # collects all the outcoming connections
         self.ip_to_sock_dic = {}
         self.load_config()
+        self.log_init()
         self._run()
+
+
+    def log_init(self):
+        try:
+            self.log_file = open("./log/router.log", "w+")
+            self.log_file.close()
+        except Exception, e:
+            print(Exception, ", ", e)
+
 
     def load_config(self):
         try:
@@ -137,6 +148,17 @@ class Router:
 
         print()
         if typ_content == 1:
+            # log: type 1
+            try:
+                # consumer收到了兴趣包, 在log文件下方附加
+                with open("./log/router.log", 'a+') as f:
+                    time_now = str(datetime.now())
+                    packet_log = time_now + " receive interest" + data + ' 1 ' + '\n'
+                    f.write(packet_log)
+            except Exception, e:
+                print(Exception, ", ", e)
+
+
             # 如果cs表里头有那么就直接发
             if data in self.cs_dic.keys():
                 # 如果cs表里头有，那么直接读取，然后返回
@@ -195,6 +217,17 @@ class Router:
                 print("Content name length is ", content_name_len)
                 content_name = data[4: 4 + content_name_len]
                 print("Content name is ", content_name)
+
+                # log type 2:
+                try:
+                    # consumer收到了兴趣包, 在log文件下方附加
+                    with open("./log/router.log", 'a+') as f:
+                        time_now = str(datetime.now())
+                        packet_log = time_now + " receive data " + data + ' 1 ' + '\n'
+                        f.write(packet_log)
+                except Exception, e:
+                    print(Exception, ", ", e)
+
                 content = data[4 + content_name_len : ]
                 if content_name in self.pit_dic.keys():
                     # 缓存

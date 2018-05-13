@@ -2,6 +2,7 @@
 import select
 import socket
 import struct
+from datetime import datetime
 
 #_HOST = '127.0.0.1'
 _HOST = '192.168.80.134'
@@ -21,7 +22,15 @@ class Publisher:
         self.port = port
         self.connections = [] # collects all the incoming connections
         self.load_config()
+        self.log_init()
         self._run()
+
+    def log_init(self):
+        try:
+            self.log_file = open("./log/publisher.log", "w+")
+            self.log_file.close()
+        except Exception, e:
+            print(Exception, ", ", e)
 
     def load_config(self):
         try:
@@ -96,6 +105,21 @@ class Publisher:
                 # 原始的整个数据包
                 data_origin = msg_content + typ_content + data
                 print("The received data is ", data, 'the length is', len(data))
+
+                # log
+                if packet_type == 1:
+                    try:
+                        # consumer收到了兴趣包, 在log文件下方附加
+                        with open("./log/publisher.log", 'a+') as f:
+                            time_now = str(datetime.now())
+                            packet_log = time_now + " receive interest" + data + ' 1 ' + '\n'
+                            f.write(packet_log)
+                    except Exception, e:
+                        print(Exception, ", ", e)
+
+                elif packet_type == 2:
+                    pass
+
                 # 如果包的类型和content name都对上的话，就把数据包发给router
                 try:
                     data_location = self.data_dic[data]
