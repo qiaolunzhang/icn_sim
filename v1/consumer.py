@@ -4,6 +4,7 @@ import socket
 import select
 import struct
 import sys
+import os
 
 #_HOST = '192.168.80.134'
 _HOST = '127.0.0.1'
@@ -24,7 +25,18 @@ class Consumer:
         self.port = port
         self.connections = [] # collects all the incoming connections
         self.load_config()
+        self.log_init()
         self._run()
+
+    def log_init(self):
+        try:
+            # os.path.exists("./log/consumer.log"):
+            #@todo 打开配置文件,设置为类的一个东西
+            self.log_file = open("./log/consumer.log", "w")
+            self.log_file.close()
+        except Exception, e:
+            print(Exception, ", ", e)
+
 
     def load_config(self):
         try:
@@ -82,6 +94,7 @@ class Consumer:
                 print("Failed to unpack the package type")
 
         if packet_type != 2:
+            #@todo 记录接受失败
             return
 
         if msg_content:
@@ -122,6 +135,7 @@ class Consumer:
             print("Content name is ", content_name)
             content = data[4 + content_name_len : ]
             print("Get the data: ", content)
+            #@todo 记录成功接受
         except Exception, e:
             print(Exception, ", ", e)
 
@@ -147,12 +161,13 @@ class Consumer:
                             print(Exception, ", ", e)
                         # ... else is an incoming server socket connection
                     else:
-                        #@todo 如果是用户输入
+                        # 如果是用户输入
                         message = sys.stdin.readline()
                         message = message[:-1]
                         message = struct.pack('>I', len(message)) + \
                                   struct.pack('>I', 1) + message
                         self.server_socket.send(message)
+                        #@todo 记录发送包
                         sys.stdout.write("Send the message: ")
                         sys.stdout.write(message)
                         sys.stdout.write('\n')
