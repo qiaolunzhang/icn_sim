@@ -59,7 +59,7 @@ class ChatClient:
     def connect(self):
         try:
             self.client_socket.connect((HOST, PORT))
-            self.client_socket.send(ID)
+            self.client_socket.send(ID.encode('utf-8'))
             data = self.client_socket.recv(4096)
             sys.stdout.write(data)
             self.prompt()
