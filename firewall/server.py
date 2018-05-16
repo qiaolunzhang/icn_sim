@@ -26,59 +26,27 @@ class ChatServer:
 
     def chat(self,sock):#点对点聊天，发送消息格式id||信息
         try:
-	    data = sock.recv(inBufSize)
-	    print "content name = %s" % ( data)
-	    self.socketsMap['1'].send(data)
-	    data1 = self.socketsMap['1'].recv(inBufSize)
-	    print "cpu rate of cpu 1 = %s" % ( data1)
-	    self.socketsMap['2'].send(data)
-	    data2 = self.socketsMap['2'].recv(inBufSize)
-	    print "cpu rate of cpu 2 = %s" % ( data2)
-	    if (float(data1)>float(data2)):
-	    	runid='2'
+            data = sock.recv(inBufSize)
+            print "content name = %s" % ( data)
+            self.socketsMap['1'].send(data)
+            data1 = self.socketsMap['1'].recv(inBufSize)
+            print "cpu rate of cpu 1 = %s" % ( data1)
+            self.socketsMap['2'].send(data)
+            data2 = self.socketsMap['2'].recv(inBufSize)
+            print "cpu rate of cpu 2 = %s" % ( data2)
+            if (float(data1)>float(data2)):
+                runid='2'
             else:
-		runid='1'
-	    print "running id %s" %(runid)
-	    self.socketsMap['1'].send(runid)
-	    self.socketsMap['2'].send(runid)
-	    firewall_list = self.socketsMap[runid].recv(inBufSize)
-            print "firewall list :%s" % ( firewall_list)
+                runid='1'
+            print "running id %s" %(runid)
+            self.socketsMap['1'].send(runid)
+            self.socketsMap['2'].send(runid)
+            firewall_result = self.socketsMap[runid].recv(inBufSize)
+            print "firewall result: %s" % ( firewall_result)
+            sock.send(firewall_result)
         except Exception,e:
-	    print 'Unable to connect because of %s'%e
+            print 'Unable to connect because of %s'%e
             sock.send("remote is offline")
-        """else:
-            remote_id = 1
-            message = "interest"
-            print "id = %s,message = %s"%(remote_id,message)
-            local_id = self.idMap[sock]
-            if remote_id == 'all':
-                self.broadcast(local_id,message)
-            else:
-                self.p2psend(local_id,message,remote_id)"""
-
-    def p2psend(self,local_id,message,remote_id):
-        remote_socket = self.socketsMap[remote_id]
-        message_send = "%s said : %s" % (local_id, message)
-        try:
-            remote_socket.sendall(message_send)
-        except Exception,e:
-            print e
-            remote_socket.close()
-            CONNECTION_LIST.remove(remote_socket)
-
-    def broadcast(self,local_id,message):
-        for sock in CONNECTION_LIST:
-            if sock == self.serverSocket:
-                continue
-            else:
-                try:
-                    message_send = "%s said : %s" % (local_id, message)
-                    sock.send(message_send)
-                except Exception,e:
-                    print e
-                    sock.close()
-                    CONNECTION_LIST.remove(sock)
-                    continue
 
     def socet_handle(self):
         while 1:

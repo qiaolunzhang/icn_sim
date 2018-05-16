@@ -33,7 +33,18 @@ class Router:
         self.ip_to_sock_dic = {}
         self.load_config()
         self.log_init()
+        self.firewall_init()
         self._run()
+
+
+    def firewall_init(self):
+        try:
+            self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.firewall_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.firewall_socket.connect(("127.0.0.1", 5251))
+            self.firewall_socket.send('5000')
+        except Exception, e:
+            print(Exception, ", ", e)
 
 
     def log_init(self):
