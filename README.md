@@ -20,3 +20,5 @@ The format of *router.config* is as follows:
 
 - /aueb.gr/   ip_addr1
 - /aueb.gr/cs ip_addr2
+
+#### firewall
