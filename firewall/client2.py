@@ -18,10 +18,10 @@ class ChatClient:
             sys.stdout.write(data)
             self.prompt()
         except Exception,e:
-            print 'Unable to connect because of %s'%e
+            print('Unable to connect because of %s'%e)
             sys.exit()
         else:
-            print 'Connected to remote host. Start sending messages'
+            print('Connected to remote host. Start sending messages')
             self.prompt()
 
 
@@ -44,13 +44,13 @@ class ChatClient:
                     sys.stdout.write(cpurate)
                     self.client_socket.send(cpurate)
                     data = sock.recv(4096)
-                    print "\n running id %s" % (data)
-                    if (data=='1'):
-                        print "\n true"
+                    print("\n running id %s" % (data))
+                    if (data=='2'):
+                        print("\n true")
                         blackname='interest'
                         self.client_socket.send(blackname)
                     else:
-                        print "\n false"
+                        print("\n false")
                         continue
                     self.prompt()
                     # user entered a message
