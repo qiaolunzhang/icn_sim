@@ -14,7 +14,7 @@ class ChatClient:
         self.connect()
         self.load_model()
         #@todo 后面需要去掉下面这行
-        self.judge_content_name(u'法轮功')
+        # self.judge_content_name(u'法轮功')
 
     def load_model(self):
         self.blacklist = blacklist
