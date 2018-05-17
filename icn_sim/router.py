@@ -43,6 +43,10 @@ class Router:
             self.firewall_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.firewall_socket.connect(("192.168.80.136", 5252))
             self.firewall_socket.send('5000')
+            # 用掉firewall回复的确认
+            firewall_result = self.firewall_socket.recv(4096)
+            print("\n")
+            print(firewall_result, '\n')
         except Exception, e:
             print(Exception, ", ", e)
 
