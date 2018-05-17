@@ -41,7 +41,7 @@ class Router:
         try:
             self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.firewall_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.firewall_socket.connect(("127.0.0.1", 5251))
+            self.firewall_socket.connect(("127.0.0.1", 5252))
             self.firewall_socket.send('5000')
         except Exception, e:
             print(Exception, ", ", e)
@@ -171,6 +171,12 @@ class Router:
 
 
             # 如果cs表里头有那么就直接发
+            #@todo 根据content name查询服务器
+            self.firewall_socket.send(data)
+            firewall_result = self.firewall_socket.recv(4096)
+            print("The result is ", firewall_result)
+            if firewall_result == '0':
+                return
             if data in self.cs_dic.keys():
                 # 如果cs表里头有，那么直接读取，然后返回
                 try:
