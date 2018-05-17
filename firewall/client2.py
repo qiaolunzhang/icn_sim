@@ -27,6 +27,7 @@ class ChatClient:
             print("\n Now blacklist is: ")
             print(self.blacklist)
 
+            content_name = content_name.decode('utf-8')
             for blacklist_element in blacklist:
                 # 通过content name来生成
                 content_name_result = self.model.most_similar(content_name)
