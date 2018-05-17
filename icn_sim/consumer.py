@@ -147,7 +147,8 @@ class Consumer:
             content_name = data[4: 4 + content_name_len]
             print("Content name is ", content_name)
             content = data[4 + content_name_len : ]
-            print("Get the data: ", content.decode('utf-8'))
+            print("Get the data: ")
+            # 解码成utf-8才能正常显示
             print(content.decode('utf-8'))
             # 记录成功接受
             with open('./log/consumer.log', 'a+') as f:
@@ -182,6 +183,7 @@ class Consumer:
                         # 如果是用户输入
                         message = sys.stdin.readline()
                         message = message[:-1]
+                        # 保存真实发送的数据
                         message_log = message
                         message = struct.pack('>I', len(message)) + \
                                   struct.pack('>I', 1) + message
@@ -194,7 +196,7 @@ class Consumer:
                             f.write(packet_log)
 
                         sys.stdout.write("Send the message: ")
-                        sys.stdout.write(message)
+                        sys.stdout.write(message_log)
                         sys.stdout.write('\n')
                         sys.stdout.flush()
 
