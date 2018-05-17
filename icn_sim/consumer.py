@@ -147,7 +147,7 @@ class Consumer:
             content_name = data[4: 4 + content_name_len]
             print("Content name is ", content_name)
             content = data[4 + content_name_len : ]
-            print("Get the data: ", content.decode('utf-8'))
+            print("Get the data: ", content.decode('utf-8').encode('gbk'))
             # 记录成功接受
             with open('./log/consumer.log', 'a+') as f:
                 time_now = str(datetime.now())
