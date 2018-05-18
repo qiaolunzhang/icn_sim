@@ -10,11 +10,14 @@ simulating icn in lab
 - 第一行localip改成自己的IP地址
 - 后面几行的ip改成内容对应的publisher的ip地址
 
+修改Router.py
+- 将Router.py的firewall_init函数中的ip改成防火墙的ip地址
+
 #### Publisher
 修改icn_sim/config/publisher.conf
 - 如果要增加内容的话那就修改
 
-修改publisher.conf
+修改publisher.py
 - 第一行_HOST = '192.168.80.134'改为publisher的ip地址
 
 ### Three parts of ICN
