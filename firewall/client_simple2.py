@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-import socket, select, string, sys,os,psutil
+import socket, select, sys,os,psutil
 HOST = '127.0.0.1'
 PORT = 5252
 ID = '2'
