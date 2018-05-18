@@ -56,7 +56,8 @@ class ChatClient:
                     self.blacklist.append(content_name)
                     return False
             return True
-        except:
+        except Exception, e:
+            print(Exception, ", ", e)
             print('did not find the word')
 
     def connect(self):

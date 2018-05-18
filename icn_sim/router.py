@@ -33,7 +33,10 @@ class Router:
         self.ip_to_sock_dic = {}
         self.load_config()
         self.log_init()
-        self.firewall_init()
+        try:
+            self.firewall_init()
+        except Exception, e:
+            print(Exception, ", ", e)
         self._run()
 
 
