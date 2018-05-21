@@ -10,6 +10,9 @@ IP_address = '127.0.0.1'
 Port = 5252
 server.connect((IP_address, Port))
 
+server.send('5000')
+server.recv(4096)
+
 while True:
 
     # maintains a list of possible input streams
