@@ -27,8 +27,10 @@ class ChatClient:
             print("\n Now blacklist is: ")
             print(self.blacklist)
 
+            print("before convert: ", content_name)
             # convert content_name
             content_name = content_name.decode('utf-8')
+            print("after convert: ", content_name)
 
             for blacklist_element in blacklist:
                 # 通过content name来生成
