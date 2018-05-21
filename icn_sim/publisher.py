@@ -104,7 +104,8 @@ class Publisher:
                         tot_data_len += len(chunk)
                 # 原始的整个数据包
                 data_origin = msg_content + typ_content + data
-                print("The received data is ", data, 'the length is', len(data))
+                print("接受到的数据包为")
+                print(data.decode('utf-8'))
 
                 # log
                 if packet_type == 1:
