@@ -11,7 +11,8 @@ Port = 5252
 server.connect((IP_address, Port))
 
 server.send('5000')
-server.recv(4096)
+result = server.recv(4096)
+print(result)
 
 while True:
 
