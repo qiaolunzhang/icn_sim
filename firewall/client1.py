@@ -32,6 +32,13 @@ class ChatClient:
             content_name = content_name.decode('utf-8')
             print("after convert: ", content_name)
 
+            if content_name in blacklist:
+                print("防火墙包含: ")
+                for i in self.blacklist:
+                    print(i)
+                print("Content name is in blacklist.")
+                return False
+
             for blacklist_element in blacklist:
                 # 通过content name来生成
                 content_name_result = self.model.most_similar(content_name)
@@ -39,12 +46,16 @@ class ChatClient:
 
                 for e in content_name_result:
                     content_name_result_list.append(e[0])
-                print("\n Content name result is ")
-                print(content_name_result_list)
+                #print("\n Content name result is ")
+                print("\n 通过Content name推理出的词汇为：")
+                for i in content_name_result_list:
+                    print(i)
+                #print(content_name_result_list)
 
                 for i in content_name_result_list:
                     if i in self.blacklist:
                         self.blacklist.append(content_name)
+                        print("The content name is in the result of content name result.")
                         return False
                 # 通过blacklist来生成
                 element_result = self.model.most_similar(blacklist_element)
@@ -52,15 +63,19 @@ class ChatClient:
                 for e in element_result:
                     element_result_list.append(e[0])
                 print("\n Blacklist element ", blacklist_element)
-                print("\n Blacklist element result is ", element_result_list)
+                #print("\n Blacklist element result is ", element_result_list)
+                print("\n 通过黑名单推理出来的词汇是：")
+                for i in element_result_list:
+                    print(i)
 
                 if content_name in element_result_list:
                     self.blacklist.append(content_name)
+                    print("The content name is in the result of blacklist result.")
                     return False
             return True
         except Exception, e:
             print(Exception, ", ", e)
-            print('did not find the word')
+            return True
 
     def connect(self):
         try:
