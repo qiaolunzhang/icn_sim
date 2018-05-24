@@ -184,11 +184,12 @@ class Router:
 
         # 如果cs表里头有那么就直接发
         #  根据content name查询服务器
-        self.firewall_socket.send(data)
-        firewall_result = self.firewall_socket.recv(4096)
-        print("The result is ", firewall_result)
-        if firewall_result == '0':
-            return
+        if self.firewall_enable:
+            self.firewall_socket.send(data)
+            firewall_result = self.firewall_socket.recv(4096)
+            print("The result is ", firewall_result)
+            if firewall_result == '0':
+                return
         if data in self.cs_dic.keys():
             # 如果cs表里头有，那么直接读取，然后返回
             try:
