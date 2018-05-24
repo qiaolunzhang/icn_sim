@@ -41,3 +41,7 @@ The format of *router.config* is as follows:
 - /aueb.gr/cs ip_addr2
 
 #### firewall
+
+### visualize
+发包如何和收包对应？只画收到包的部分
+#### 可视化包的格式
