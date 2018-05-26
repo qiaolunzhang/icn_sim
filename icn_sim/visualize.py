@@ -25,7 +25,7 @@ class Visualize:
 
     def log_init(self):
         try:
-            self.log_file = open("./log/publisher.log", "w+")
+            self.log_file = open("./log/visualize.log", "w+")
             self.log_file.close()
         except Exception, e:
             print(Exception, ", ", e)
