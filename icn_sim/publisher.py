@@ -40,7 +40,7 @@ class Publisher:
                         line = line.split()
                         if line[0] == 'publisher_ip':
                             self.host = line[1]
-                            self.port = line[2]
+                            self.port = int(line[2])
                             continue
                         self.data_dic[line[0]] = line[1]
 
