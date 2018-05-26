@@ -82,7 +82,7 @@ class Router:
                         line = line.split()
                         if line[0] == 'local_ip':
                             self.host = line[1]
-                            self.port = line[2]
+                            self.port = int(line[2])
                         if line[0] == 'visual_ip':
                             self.visualize_host = line[1]
                             self.visualize_port = line[2]
