@@ -78,6 +78,7 @@ class Router:
         try:
             with open('./config/router.conf') as f:
                 for line in f:
+                    print(line[0])
                     if line[0] != '#':
                         if line[0] == 'local_ip':
                             self.host = line[1]
