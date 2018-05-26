@@ -66,7 +66,6 @@ class Router:
             print(Exception, ", ", e)
 
     def visualize_init(self):
-        #@todo 连接visualize的机器（对应ip和端口）
         try:
             self.visualize_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.visualize_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
