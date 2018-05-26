@@ -65,7 +65,12 @@ class Router:
 
     def visualize_init(self):
         #@todo 连接visualize的机器（对应ip和端口）
-        pass
+        try:
+            self.visualize_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.visualize_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.firewall_socket.connect((self.visualize_host, self.visualize_port))
+        except Exception, e:
+            print(Exception, ", ", e)
 
 
     def log_init(self):
@@ -188,6 +193,7 @@ class Router:
                 time_now = str(datetime.now())
                 packet_log = time_now + " receive interest " + data + ' 1 ' + '\n'
                 f.write(packet_log)
+                self.visualize_socket.send(packet_log)
         except Exception, e:
             print(Exception, ", ", e)
 
