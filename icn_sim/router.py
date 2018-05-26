@@ -30,6 +30,8 @@ class Router:
 
         self.host = ''
         self.port = 20000
+        self.firewall_host = ''
+        self.firewall_port = 11111
         self.visualize_host = ''
         self.visualize_port = ''
         self.connections = [] # collects all the incoming connections
@@ -52,7 +54,7 @@ class Router:
         try:
             self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.firewall_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.firewall_socket.connect(("192.168.80.136", 5252))
+            self.firewall_socket.connect((self.firewall_host, self.firewall_port))
             self.firewall_socket.send('5000')
             # 用掉firewall回复的确认
             firewall_result = self.firewall_socket.recv(4096)
@@ -83,9 +85,15 @@ class Router:
                         if line[0] == 'local_ip':
                             self.host = line[1]
                             self.port = int(line[2])
+                            continue
                         if line[0] == 'visual_ip':
                             self.visualize_host = line[1]
-                            self.visualize_port = line[2]
+                            self.visualize_port = int(line[2])
+                            continue
+                        if line[0] == 'firewall_ip':
+                            self.firewall_host = line[1]
+                            self.firewall_port = int(line[2])
+                            continue
                         self.fib_dic[line[0]] = line[1]
 
             #print(self.fib_dic)

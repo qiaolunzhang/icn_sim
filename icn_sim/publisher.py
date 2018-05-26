@@ -5,8 +5,8 @@ import struct
 from datetime import datetime
 
 #_HOST = '127.0.0.1'
-_HOST = '192.168.80.134'
-_PORT = 10000
+#_HOST = '192.168.80.134'
+#_PORT = 10000
 
 class Publisher:
     MAX_WAITING_CONNECTIONS = 100
@@ -14,12 +14,12 @@ class Publisher:
     RECV_msg_content = 4
     RECV_MSG_TYPE_LEN = 4
 
-    def __init__(self, host, port):
+    def __init__(self):
         # store the data
         self.data_dic = {}
 
-        self.host = host
-        self.port = port
+        self.host = ''
+        self.port = 20000
         self.connections = [] # collects all the incoming connections
         self.load_config()
         self.log_init()
@@ -38,6 +38,10 @@ class Publisher:
                 for line in f:
                     if line[0] != '#':
                         line = line.split()
+                        if line[0] == 'publisher_ip':
+                            self.host = line[1]
+                            self.port = line[2]
+                            continue
                         self.data_dic[line[0]] = line[1]
 
         except Exception, e:
@@ -182,4 +186,4 @@ class Publisher:
                             continue
 
 
-p = Publisher(_HOST, _PORT)
+p = Publisher()

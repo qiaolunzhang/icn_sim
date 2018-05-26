@@ -8,6 +8,7 @@ simulating icn in lab
 #### Router
 修改icn_sim/config/router.conf
 - 第一行localip改成自己的IP地址
+- 第二行visual_ip改成可视化的机器的IP地址
 - 后面几行的ip改成内容对应的publisher的ip地址
 
 修改Router.py
