@@ -132,12 +132,13 @@ class Publisher:
                 # log
                 if packet_type == 1:
                     try:
-                        #@todo 把发送包的格式再改一下
+                        #@todo 可以增加记录收到兴趣包的情况
                         # consumer收到了兴趣包, 在log文件下方附加
                         with open("./log/publisher.log", 'a+') as f:
-                            time_now = str(datetime.now())
-                            packet_log = time_now + " receive interest " + data + ' 1 ' + '\n'
-                            f.write(packet_log)
+                            time_now = datetime.now()
+                            time_num_str = str(time_now.year) + str(time_now.month) + str(time_now.day) + str(time_now.hour) + str(time_now.minute) + str(time_now.second) + str(time_now.microsecond)
+                            packet_log = time_num_str + " interest " + data + ' 1 '
+                            f.write(packet_log + '\n')
                             self.visualize_socket.send(packet_log)
                     except Exception, e:
                         print(Exception, ", ", e)
