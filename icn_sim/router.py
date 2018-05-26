@@ -194,7 +194,7 @@ class Router:
             with open("./log/router.log", 'a+') as f:
                 time_now = datetime.now()
                 time_num_str = str(time_now.year)+str(time_now.month)+str(time_now.day)+str(time_now.hour)+str(time_now.minute)+str(time_now.second)+str(time_now.microsecond)
-                packet_log = time_num_str + " interest " + self.sock_to_ip_dic[sock] + data + ' 1 '
+                packet_log = time_num_str + " interest " + self.sock_to_ip_dic[sock] + " " + self.host + data + ' 1 '
                 f.write(packet_log+'\n')
                 self.visualize_socket.send(packet_log)
                 print("Send the data to visualize server")
@@ -275,7 +275,7 @@ class Router:
                 with open("./log/router.log", 'a+') as f:
                     time_now = datetime.now()
                     time_num_str = str(time_now.year) + str(time_now.month) + str(time_now.day) + str(time_now.hour) + str(time_now.minute) + str(time_now.second) + str(time_now.microsecond)
-                    packet_log = time_num_str + " data " + self.sock_to_ip_dic[sock] + content_name + ' 1 '
+                    packet_log = time_num_str + " data " + self.sock_to_ip_dic[sock] + " " + self.host + ' ' + content_name + ' 1 '
                     sock.send(packet_log)
                     f.write(packet_log + '\n')
                     self.visualize_socket.send(packet_log)
