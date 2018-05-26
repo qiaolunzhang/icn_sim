@@ -46,3 +46,8 @@ The format of *router.config* is as follows:
 ### visualize
 发包如何和收包对应？只画收到包的部分
 #### 可视化包的格式
+2018-05-13 20:06:55.739452 interest /aueb.gr/ 1
+```
+message = message.split()
+time_int =
+```

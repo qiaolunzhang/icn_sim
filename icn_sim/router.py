@@ -188,13 +188,14 @@ class Router:
 
     def _process_packet_interest(self, sock, typ_content, data_origin, data):
         # log: type 1
-        #@todo 发送兴趣包log信息
+        #@todo 根据是否拦截来发送最后面的0,1表示
         try:
             # consumer收到了兴趣包, 在log文件下方附加
             with open("./log/router.log", 'a+') as f:
-                time_now = str(datetime.now())
-                packet_log = time_now + " receive interest " + data + ' 1 ' + '\n'
-                f.write(packet_log)
+                time_now = datetime.now()
+                time_num_str = str(time_now.year)+str(time_now.month)+str(time_now.day)+str(time_now.hour)+str(time_now.minute)+str(time_now.second)+str(time_now.microsecond)
+                packet_log = time_num_str + " interest " + data + ' 1 '
+                f.write(packet_log+'\n')
                 self.visualize_socket.send(packet_log)
                 print("Send the data to visualize server")
         except Exception, e:
@@ -272,9 +273,13 @@ class Router:
             try:
                 # consumer收到了兴趣包, 在log文件下方附加
                 with open("./log/router.log", 'a+') as f:
-                    time_now = str(datetime.now())
-                    packet_log = time_now + " receive data " + data + ' 1 ' + '\n'
-                    f.write(packet_log)
+                    time_now = datetime.now()
+                    time_num_str = str(time_now.year) + str(time_now.month) + str(time_now.day) + str(time_now.hour) + str(time_now.minute) + str(time_now.second) + str(time_now.microsecond)
+                    packet_log = time_num_str + " data " + data + ' 1 '
+                    sock.send(packet_log)
+                    f.write(packet_log + '\n')
+                    self.visualize_socket.send(packet_log)
+                    print("Send the data to visualize server")
             except Exception, e:
                 print(Exception, ", ", e)
 
