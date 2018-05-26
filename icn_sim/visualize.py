@@ -61,7 +61,8 @@ class Visualize:
         :return:
         """
         try:
-            sock.recv(2048)
+            message = sock.recv(2048)
+            print(message)
         except Exception, e:
             print(Exception, ", ", e)
 
