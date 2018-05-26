@@ -6,8 +6,8 @@ import os
 from datetime import datetime
 
 #_HOST = '127.0.0.1'
-_HOST = '192.168.80.135'
-_PORT = 10000
+#_HOST = '192.168.80.135'
+#_PORT = 10000
 
 
 class Router:
@@ -16,7 +16,7 @@ class Router:
     RECV_msg_content = 4
     RECV_MSG_TYPE_LEN = 4
 
-    def __init__(self, host, port):
+    def __init__(self):
         # 用于保存文件名
         self.file_number = 1
         # store the fib form
@@ -26,8 +26,8 @@ class Router:
         # store the cs form
         self.cs_dic = {}
 
-        self.host = host
-        self.port = port
+        self.host = ''
+        self.port = 20000
         self.connections = [] # collects all the incoming connections
         self.out_conn_dic = {} # collects all the outcoming connections
         self.ip_to_sock_dic = {}
@@ -92,6 +92,7 @@ class Router:
         """
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        print("Now binding socket, host is ", self.host, " port is ", self.port)
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(self.MAX_WAITING_CONNECTIONS)
         self.connections.append(self.server_socket)
@@ -312,4 +313,4 @@ class Router:
                             continue
 
 
-r = Router(_HOST, _PORT)
+r = Router()
