@@ -61,6 +61,7 @@ class Visualize:
         :return:
         """
         try:
+            #@todo 那就先做一个不排序的版本，就按照收到包的先做一个
             message = sock.recv(2048)
             print(message)
         except Exception, e:
