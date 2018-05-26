@@ -69,6 +69,7 @@ class Router:
             self.visualize_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.visualize_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.firewall_socket.connect((self.visualize_host, self.visualize_port))
+            print("Connect to visualize server, host is ", self.visualize_host, "port is ", self.visualize_port)
         except Exception, e:
             print(Exception, ", ", e)
 
@@ -194,6 +195,7 @@ class Router:
                 packet_log = time_now + " receive interest " + data + ' 1 ' + '\n'
                 f.write(packet_log)
                 self.visualize_socket.send(packet_log)
+                print("Send the data to visualize server")
         except Exception, e:
             print(Exception, ", ", e)
 
