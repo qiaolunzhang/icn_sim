@@ -70,7 +70,7 @@ class Router:
         try:
             self.visualize_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.visualize_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.firewall_socket.connect((self.visualize_host, self.visualize_port))
+            self.visualize_socket.connect((self.visualize_host, self.visualize_port))
             print("Connect to visualize server, host is ", self.visualize_host, "port is ", self.visualize_port)
         except Exception, e:
             print(Exception, ", ", e)
