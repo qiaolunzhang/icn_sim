@@ -39,7 +39,9 @@ class Router:
         self.ip_to_sock_dic = {}
         self.sock_to_ip_dic = {}
         self.load_config()
+
         self.log_init()
+        self.visualize_init()
         #@todo 暂时不加入防火墙功能，用于log调试
         self.firewall_enable = False
         if self.firewall_enable:
