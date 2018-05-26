@@ -78,15 +78,14 @@ class Router:
         try:
             with open('./config/router.conf') as f:
                 for line in f:
-                    print(line[0])
                     if line[0] != '#':
+                        line = line.split()
                         if line[0] == 'local_ip':
                             self.host = line[1]
                             self.port = line[2]
                         if line[0] == 'visual_ip':
                             self.visualize_host = line[1]
                             self.visualize_port = line[2]
-                        line = line.split()
                         self.fib_dic[line[0]] = line[1]
 
             #print(self.fib_dic)
