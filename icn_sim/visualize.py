@@ -73,12 +73,14 @@ class Visualize:
                 message_list[0] = self.machine_dic[message_list[0]]
             else:
                 self.machine_dic[message_list[0]] = self.machine_index
+                message_list[0] = self.machine_index
                 self.machine_index = self.machine_index + 1
             print("first element: ", message)
             if message_list[1] in self.machine_dic.keys():
                 message_list[1] = self.machine_dic[message_list[1]]
             else:
                 self.machine_dic[message_list[1]] = self.machine_index
+                message_list[1] = self.machine_index
                 self.machine_index = self.machine_index + 1
 
             print("second element: ", message)
