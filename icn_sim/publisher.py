@@ -140,7 +140,6 @@ class Publisher:
 
                             packet_log = time_num_str + " interest " + self.sock_to_ip_dic[sock] + " " + self.host + " " + data + ' 1 '
                             f.write(packet_log + '\n')
-                            self.visualize_socket.send(packet_log)
                     except Exception, e:
                         print(Exception, ", ", e)
 

@@ -19,6 +19,8 @@ class Visualize:
 
         self.port = port
         self.connections = [] # collects all the incoming connections
+        self.machine_dic ={}
+        self.machine_index = 0
         self.load_config()
         self.log_init()
         self._run()
@@ -59,10 +61,25 @@ class Visualize:
             # | src, | dst, | type, | pass, | time
             # | -------- | -------- | -------- | ------- | ------
             # | 0, | 1, | 1, | 1, | 2018526221022933988
+            # eg convert the  following
+            #
         :return:
         """
         try:
             message = sock.recv(2048)
+            message_list = [x.strip() for x in message.split(',')]
+            if message_list[0] in self.machine_dic.keys():
+                message_list[0] = self.machine_dic[message_list[0]]
+            else:
+                self.machine_dic[message_list[0]] = self.machine_index
+                self.machine_index = self.machine_index + 1
+            if message_list[1] in self.machine_dic.keys():
+                message_list[1] = self.machine_dic[message_list[1]]
+            else:
+                self.machine_dic[message_list[1]] = self.machine_index
+                self.machine_index = self.machine_index + 1
+
+            message = ",".join(message_list)
             with open("./log/visualize.log", 'a+') as f:
                 f.write(message+'\n')
             print(message)
