@@ -129,15 +129,15 @@ class Publisher:
                 data_origin = msg_content + typ_content + data
                 print("接受到的数据包为")
                 print(data.decode('utf-8'))
-
+                time_now = datetime.now()
+                time_num_str = str(time_now.year) + str(time_now.month) + str(time_now.day) + str(time_now.hour) + str(time_now.minute) + str(time_now.second) + str(time_now.microsecond)
                 # log
                 if packet_type == 1:
                     try:
                         #@todo 可以增加记录收到兴趣包的情况
                         # consumer收到了兴趣包, 在log文件下方附加
                         with open("./log/publisher.log", 'a+') as f:
-                            time_now = datetime.now()
-                            time_num_str = str(time_now.year) + str(time_now.month) + str(time_now.day) + str(time_now.hour) + str(time_now.minute) + str(time_now.second) + str(time_now.microsecond)
+
                             packet_log = time_num_str + " interest " + self.sock_to_ip_dic[sock] + " " + self.host + " " + data + ' 1 '
                             f.write(packet_log + '\n')
                             self.visualize_socket.send(packet_log)
@@ -146,6 +146,9 @@ class Publisher:
 
                 elif packet_type == 2:
                     pass
+
+                packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "1, " + "1, " + time_num_str + ", " + data
+                self.visualize_socket.send(packet_log)
 
                 # 如果包的类型和content name都对上的话，就把数据包发给router
                 try:
