@@ -189,14 +189,17 @@ class Router:
     def _process_packet_interest(self, sock, typ_content, data_origin, data):
         # log: type 1
         #@todo 根据是否拦截来发送最后面的0,1表示
+        time_now = datetime.now()
+        time_num_str = str(time_now.year) + str(time_now.month) + str(time_now.day) + str(time_now.hour) + str(time_now.minute) + str(time_now.second) + str(time_now.microsecond)
         try:
             # consumer收到了兴趣包, 在log文件下方附加
             with open("./log/router.log", 'a+') as f:
-                time_now = datetime.now()
-                time_num_str = str(time_now.year)+str(time_now.month)+str(time_now.day)+str(time_now.hour)+str(time_now.minute)+str(time_now.second)+str(time_now.microsecond)
-                packet_log = time_num_str + " interest " + self.sock_to_ip_dic[sock] + " " + self.host + " " + data + ' 1 '
+                # |src,    |dst,    |type,   |pass,  |time
+                # |0,      |      1,|      1,|     1,|2018526221022933988
+                packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "1, " + "1, " + time_num_str + ", " + data
+                #packet_log = time_num_str + " interest " + self.sock_to_ip_dic[sock] + " " + self.host + " " + data + ' 1 '
                 f.write(packet_log+'\n')
-                self.visualize_socket.send(packet_log)
+                #self.visualize_socket.send(packet_log)
                 print("Send the data to visualize server")
         except Exception, e:
             print(Exception, ", ", e)
@@ -208,7 +211,13 @@ class Router:
             firewall_result = self.firewall_socket.recv(4096)
             print("The result is ", firewall_result)
             if firewall_result == '0':
+                packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "1, " + "0, " + time_num_str + ", " + data
+                self.visualize_socket.send(packet_log)
                 return
+
+        packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "1, " + "1, " + time_num_str + ", " + data
+        self.visualize_socket.send(packet_log)
+
         if data in self.cs_dic.keys():
             # 如果cs表里头有，那么直接读取，然后返回
             try:
@@ -270,18 +279,20 @@ class Router:
 
             #@todo 发送数据包log
             # log type 2:
+            time_now = datetime.now()
+            time_num_str = str(time_now.year) + str(time_now.month) + str(time_now.day) + str(time_now.hour) + str(time_now.minute) + str(time_now.second) + str(time_now.microsecond)
             try:
                 # consumer收到了兴趣包, 在log文件下方附加
                 with open("./log/router.log", 'a+') as f:
-                    time_now = datetime.now()
-                    time_num_str = str(time_now.year) + str(time_now.month) + str(time_now.day) + str(time_now.hour) + str(time_now.minute) + str(time_now.second) + str(time_now.microsecond)
                     packet_log = time_num_str + " data " + self.sock_to_ip_dic[sock] + " " + self.host + " " + content_name + ' 1 '
-                    sock.send(packet_log)
+                    # sock.send(packet_log)
                     f.write(packet_log + '\n')
-                    self.visualize_socket.send(packet_log)
-                    print("Send the data to visualize server")
+                    #self.visualize_socket.send(packet_log)
             except Exception, e:
                 print(Exception, ", ", e)
+
+            packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "2, " + "1, " + time_num_str + ", " + content_name
+            self.visualize_socket.send(packet_log)
 
             content = data[4 + content_name_len:]
             if content_name in self.pit_dic.keys():

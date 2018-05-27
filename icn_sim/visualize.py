@@ -55,13 +55,13 @@ class Visualize:
 
     def _receive(self, sock):
         """
-        first get length
-        then get type
-        process
+        #@todo 那就先做一个不排序的版本，就按照收到包的先做一个
+            # | src, | dst, | type, | pass, | time
+            # | -------- | -------- | -------- | ------- | ------
+            # | 0, | 1, | 1, | 1, | 2018526221022933988
         :return:
         """
         try:
-            #@todo 那就先做一个不排序的版本，就按照收到包的先做一个
             message = sock.recv(2048)
             with open("./log/visualize.log", 'a+') as f:
                 f.write(message+'\n')

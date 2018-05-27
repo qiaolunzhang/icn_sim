@@ -320,8 +320,8 @@
                 }
                 src_array[i] = src;
             }
-            dst_array[4] = dst_array[3];
-            src_array[4] = src_array[3];
+            dst_array[4] = src_array[3];
+            src_array[4] = dst_array[3];
         },
 
         getData: function() {
@@ -362,7 +362,7 @@
                 strokeColor = 'red';
             }
             */
-            if (index<3) {
+            if (index<4) {
                 strokeColor = 'green';
             } else {
                 strokeColor = 'red';
