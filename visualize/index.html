@@ -385,9 +385,9 @@
             var dstlong = slatlong[dst].long;
             which_attack = attack_type[Math.floor((Math.random() * attack_type.length))];
             var srccountry = slatlong[src]["country"];
-            //@todo 或许要去掉
             attackdiv_slatlong = slatlong[dst]["country"];
 
+            //@todo 改变颜色, 需要根据csv指定一个新的flag
             if (getStroke() < 70) {
                 strokeColor = 'green';
             }
