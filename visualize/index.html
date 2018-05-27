@@ -262,6 +262,7 @@
 
     // setup structures for the "hits" (arcs)
     // and circle booms
+    var attack_type = 1;
 
     var hits = FixedQueue( 7, [  ] );
     var boom = FixedQueue( 7, [  ] );
@@ -327,6 +328,12 @@
             if (this.attack_position < this.attack_data.length) {
                 this.src_now = parseInt(this.attack_data[this.attack_position].split(",")[0]);
                 this.dst_now = parseInt(this.attack_data[this.attack_position].split(",")[1]);
+                if (parseInt(this.attack_data[this.attack_position].split(",")[2]) == 1) {
+                    alert("ok");
+                    attack_type = 1;
+                } else {
+                    attack_type = 2;
+                }
                 this.attack_position = this.attack_position + 1;
             } else {
                 this.src_now = -1;
@@ -388,7 +395,8 @@
             attackdiv_slatlong = slatlong[dst]["country"];
 
             //@todo 改变颜色, 需要根据csv指定一个新的flag
-            if (getStroke() < 70) {
+            console.log(self.attack_type);
+            if (attack_type == 1) {
                 strokeColor = 'green';
             }
             else {

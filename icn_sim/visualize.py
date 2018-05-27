@@ -28,6 +28,7 @@ class Visualize:
     def log_init(self):
         try:
             self.log_file = open("./log/visualize.csv", "w+")
+            self.log_file.write("src,dst,type,pass,time")
             self.log_file.close()
         except Exception, e:
             print(Exception, ", ", e)
