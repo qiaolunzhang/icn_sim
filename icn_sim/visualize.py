@@ -80,7 +80,8 @@ class Visualize:
                 self.machine_dic[message_list[1]] = self.machine_index
                 self.machine_index = self.machine_index + 1
 
-            message = ",".join(message_list)
+            # 需要注意message_list中有数字有字符串
+            message = ",".join(map(str, message_list))
             with open("./log/visualize.log", 'a+') as f:
                 f.write(message+'\n')
             print(message)
