@@ -315,7 +315,7 @@
             if (this.time_read > 3) {
                 this.time_read = 0;
                 // @todo 在这里读取文件
-                d3.csv("../icn_sim/log/test.csv",function(error,attack_data){
+                d3.csv("../icn_sim/log/visualize.csv",function(error,attack_data){
                     attacks.attack_data = d3.csv.format(attack_data).split('\n');
                     if(error){
                         console.log(error);
