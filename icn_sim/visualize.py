@@ -67,6 +67,7 @@ class Visualize:
         """
         try:
             message = sock.recv(2048)
+            print(message)
             message_list = [x.strip() for x in message.split(',')]
             if message_list[0] in self.machine_dic.keys():
                 message_list[0] = self.machine_dic[message_list[0]]
