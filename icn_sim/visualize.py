@@ -27,7 +27,7 @@ class Visualize:
 
     def log_init(self):
         try:
-            self.log_file = open("./log/visualize.log", "w+")
+            self.log_file = open("./log/visualize.csv", "w+")
             self.log_file.close()
         except Exception, e:
             print(Exception, ", ", e)
@@ -86,7 +86,7 @@ class Visualize:
             print("second element: ", message)
             # 需要注意message_list中有数字有字符串
             message = ",".join(map(str, message_list))
-            with open("./log/visualize.log", 'a+') as f:
+            with open("./log/visualize.csv", 'a+') as f:
                 f.write(message+'\n')
             print(message)
         except Exception, e:
