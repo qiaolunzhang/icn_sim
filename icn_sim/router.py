@@ -257,6 +257,7 @@ class Router:
 
                 self.out_conn_dic[next_hop_ip] = sock_client
                 self.ip_to_sock_dic[next_hop_ip] = sock_client
+                self.sock_to_ip_dic[sock_client] = next_hop_ip
                 self.connections.append(sock_client)
 
                 sock_client.send(data_origin)
