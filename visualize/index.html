@@ -264,11 +264,15 @@
     // and circle booms
     var attack_type = 1;
 
+    var attack_pass = 1;
+
     var hits = FixedQueue( 7, [  ] );
     var boom = FixedQueue( 7, [  ] );
 
     var src_array = new Array(5);
     var dst_array = new Array(5);
+    var ip_array = new Array(5);
+
     //@todo Index只是为了调试
     var index = 0;
     for (var i = 0; i < 5; i++) {
@@ -323,17 +327,32 @@
                     }
                     //console.log(attack_data);
                });
+
+                d3.csv("../icn_sim/log/visualize_ip.csv",function(error,attack_data){
+                    ip_array = d3.csv.format(attack_data).split('\n');
+                    if(error){
+                        console.log(error);
+                    }
+                    //console.log(attack_data);
+               });
+
             }
             // 0 1
             if (this.attack_position < this.attack_data.length) {
                 this.src_now = parseInt(this.attack_data[this.attack_position].split(",")[0]);
                 this.dst_now = parseInt(this.attack_data[this.attack_position].split(",")[1]);
                 if (parseInt(this.attack_data[this.attack_position].split(",")[2]) == 1) {
-                    alert("ok");
                     attack_type = 1;
                 } else {
                     attack_type = 2;
                 }
+
+                if (parseInt(this.attack_data[this.attack_position].split(",")[3]) == 1) {
+                    attack_pass = 1;
+                } else {
+                    attack_pass = 0;
+                }
+
                 this.attack_position = this.attack_position + 1;
             } else {
                 this.src_now = -1;
@@ -412,17 +431,22 @@
 
             boom.push( { radius: 7, latitude: +dstlat, longitude: +dstlong,
                 fillOpacity: 0.5, attk: which_attack} );
+            // 这里要改一下，如果被blocked之后就显示blocked
             map.bubbles(boom, {
                 popupTemplate: function(geo, data) {
-                    return '<div class="hoverinfo">' + data.attk + '</div>';
+                    return '<div class="hoverinfo">' + '</div>';
                 }
             });
 
+            if (attack_pass == 1) {
+                attacks = "pass";
+            } else {
+                attacks = "blocked";
+            }
             // update the scrolling attack div
-            $('#attackdiv').append(srccountry + " (" + randomIP() + ") " +
-                " <span style='color:red'>attacks</span> " +
-                attackdiv_slatlong+  " (" + randomIP() + ") " +
-                " <span style='color:steelblue'>(" + which_attack + ")</span> " +
+            $('#attackdiv').append( "(" + ip_array[this.src_now] + ") " +
+                " <span style='color:red'>" + attacks + "</span> " +
+                 " (" + ip_array[this.dst_now] + ") "  +
                 "<br/>");
             $('#attackdiv').animate({scrollTop: $('#attackdiv').prop("scrollHeight")}, 500);
 

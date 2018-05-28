@@ -213,6 +213,7 @@ class Router:
             if firewall_result == '0':
                 packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "1, " + "0, " + time_num_str + ", " + data
                 self.visualize_socket.send(packet_log)
+                print("The message is blocked")
                 return
 
         packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "1, " + "1, " + time_num_str + ", " + data
