@@ -28,7 +28,7 @@ class Visualize:
     def log_init(self):
         try:
             self.log_file = open("./log/visualize.csv", "w+")
-            self.log_file.write("src,dst,type,pass,time")
+            self.log_file.write("src,dst,type,pass,time"+'\n')
             self.log_file.close()
         except Exception, e:
             print(Exception, ", ", e)
@@ -77,12 +77,11 @@ class Visualize:
             message_list = [x.strip() for x in message.split(',')]
             # 在这里message_list[0]是ip地址
             # 记录IP地址
-            with open("./log/visualize_ip.csv", "a+") as f:
-                f.write(message_list[0]+'\n')
-
             if message_list[0] in self.machine_dic.keys():
                 message_list[0] = self.machine_dic[message_list[0]]
             else:
+                with open("./log/visualize_ip.csv", "a+") as f:
+                    f.write(message_list[0]+'\n')
                 self.machine_dic[message_list[0]] = self.machine_index
                 message_list[0] = self.machine_index
                 self.machine_index = self.machine_index + 1
