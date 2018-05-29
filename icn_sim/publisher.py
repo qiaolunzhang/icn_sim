@@ -127,7 +127,7 @@ class Publisher:
                         tot_data_len += len(chunk)
                 # 原始的整个数据包
                 data_origin = msg_content + typ_content + data
-                print("接受到的数据包为")
+                print("接受到的兴趣包的content name为")
                 print(data.decode('utf-8'))
                 time_now = datetime.now()
                 time_num_str = str(time_now.year) + str(time_now.month) + str(time_now.day) + str(time_now.hour) + str(time_now.minute) + str(time_now.second) + str(time_now.microsecond)
