@@ -12,9 +12,23 @@ class ChatClient:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.settimeout(2)
         self.connect()
+        self.load_config()
         self.load_model()
+        self.module_path = "wiki.zh.text.model"
         #@todo 后面需要去掉下面这行
         # self.judge_content_name(u'法轮功')
+
+    def load_config(self):
+        try:
+            with open('./config/client.conf') as f:
+                for line in f:
+                    self.module_path = line
+            #print(self.fib_dic)
+        except Exception, e:
+            print(Exception, ", ", e)
+            print("Failed to load the config file")
+            raise SystemExit
+
 
     def load_model(self):
         self.blacklist = blacklist
