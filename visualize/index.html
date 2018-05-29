@@ -275,7 +275,8 @@
 
     //@todo Index只是为了调试
     var index = 0;
-    for (var i = 0; i < 5; i++) {
+    // i的数字决定了这里产生的点的个数
+    for (var i = 0; i < 8; i++) {
         src_array[i] = -1;
         dst_array[i] = -1;
     }
@@ -365,7 +366,7 @@
         //@todo JS定期任务
         getPosition: function() {
             var self = this;
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i < 8; i++) {
                 dst = Math.floor((Math.random() * slatlong_length));
                 while (include(dst_array, dst) || include(src_array, dst)) {
                     dst = Math.floor((Math.random() * slatlong_length));
@@ -457,7 +458,8 @@
             }
 
             // pick a new random time and start the timer again!
-            this.interval = getRandomInt(attack_min, attack_max);
+            //this.interval = getRandomInt(attack_min, attack_max);
+            this.interval = 2000;
             //@todo 重复产生点被注释掉了
             this.init() ;
         },
