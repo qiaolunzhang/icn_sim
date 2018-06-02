@@ -254,6 +254,7 @@ class Router:
                 self.out_conn_dic[next_hop_ip].send(data_origin)
             else:
                 sock_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                print("Send the next hop: ", self.fib_dic[data], " ", 1000)
                 sock_client.connect((self.fib_dic[data], 10000))
 
                 self.out_conn_dic[next_hop_ip] = sock_client
