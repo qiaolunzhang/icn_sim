@@ -17,6 +17,7 @@ class Visualize:
         # store the data
         self.data_dic = {}
 
+        self.host = ""
         self.port = port
         self.connections = [] # collects all the incoming connections
         self.machine_dic ={}
@@ -40,10 +41,15 @@ class Visualize:
 
     def load_config(self):
         try:
-            with open('./config/publisher.conf') as f:
+            with open('./config/visualize.conf') as f:
                 for line in f:
                     if line[0] != '#':
                         line = line.split()
+                        if line[0] == "local_ip":
+                            self.host = line[1]
+                            continue
+                        if line[0] == "local_port":
+                            self.port = int(line[1])
                         self.data_dic[line[0]] = line[1]
 
         except Exception, e:
@@ -57,7 +63,7 @@ class Visualize:
         """
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_socket.bind(('', self.port))
+        self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(self.MAX_WAITING_CONNECTIONS)
         self.connections.append(self.server_socket)
 
