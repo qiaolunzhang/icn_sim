@@ -36,6 +36,8 @@ class ChatServer:
             if (float(data1)>float(data2)):
                 data1, data2 = data2, data1
                 runid='1'
+            else:
+                runid='1'
 
             print "cpu rate of cpu 1 = %s" % ( data1)
             print "cpu rate of cpu 2 = %s" % ( data2)

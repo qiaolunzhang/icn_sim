@@ -218,6 +218,7 @@ class Router:
 
         packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "1, " + "1, " + time_num_str + ", " + data
         self.visualize_socket.send(packet_log)
+        print("ok to send to visualize")
 
         if data in self.cs_dic.keys():
             # 如果cs表里头有，那么直接读取，然后返回
@@ -262,8 +263,8 @@ class Router:
                 self.sock_to_ip_dic[sock_client] = next_hop_ip
                 self.connections.append(sock_client)
 
-                sock_client.send(data_origin)
                 print("Send the packet to ", self.fib_dic[data])
+                sock_client.send(data_origin)
             # 然后改变pit表
             self.pit_dic[data] = sock
         except Exception, e:
