@@ -10,6 +10,7 @@ class ChatServer:
     def __init__(self,port=5252):
         # todo 使用socketserver来写
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.serverSocket.bind(('', port))
         self.serverSocket.listen(5)
         print "server wait for connect...."
