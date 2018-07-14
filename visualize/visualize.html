@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+        }
+
+        #titlediv {
+            font-family: monospace;
+            text-align: center;
+            font-size:48px;
+            position:fixed;
+            width:100%;
+            height:50px;
+            color:white;
+            background-color:black;
+            padding:5px;
+            top:0px;
+            overflow-y: auto;
+        }
+
+        #attackdiv {
+            font-family: monospace;
+            font-size:25px;
+            position:fixed;
+            width:50%;
+            height:100px;
+            color:white;
+            background-color:black;
+            padding:5px;
+            bottom:0px;
+            overflow-y: auto;
+        }
+
+        #container1 {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width:100%;
+            max-height:100%
+        }
+
+        #about {
+            display: hidden;
+        }
+
+        #aboutdiv {
+            text-align:right;
+            width:100px;
+            height:100px;
+            top:0px;
+            right:0px;
+            position:fixed;
+            padding:10px;
+            color: white;
+        }
+
+        #ccdiv {
+            text-align:right;
+            width:100px;
+            height:20px;
+            bottom:0px;
+            right:0px;
+            position:fixed;
+            padding:5px;
+            color: white;
+        }
+
+        #about {display:none;}
+
+        /* Overlay */
+        #simplemodal-overlay {background-color:#000;}
+
+        /* Container */
+        #simplemodal-container {height:460px; width:600px; color:#bbb; background-color:#333; border:4px solid #444; padding:12px;}
+        #simplemodal-container .simplemodal-data {padding:8px;}
+        #simplemodal-container code {background:#141414; border-left:3px solid #65B43D; color:#bbb; display:block; font-size:12px; margin-bottom:12px; padding:4px 6px 6px;}
+        #simplemodal-container a {color:#ddd;}
+        #simplemodal-container a.modalCloseImg {background:url(../img/basic/x.png) no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:-15px; right:-16px; cursor:pointer;}
+        #simplemodal-container h3 {color:#84b8d9;}
+        #simplemodal-container a.modalCloseImg {
+            background:url(x.png) no-repeat; /* adjust url as required */
+            width:25px;
+            height:29px;
+            display:inline;
+            z-index:3200;
+            position:absolute;
+            top:-15px;
+            right:-18px;
+            cursor:pointer;
+        }
+
+    </style>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://d3js.org/d3.geo.projection.v0.min.js"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <script src="https://datamaps.github.io/scripts/datamaps.world.min.js?v=1"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="jquery.simplemodal-1.4.4.js"></script>
+
+    <script>
+        function about() {
+            $("#about").modal();
+        }
+    </script>
+
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+
+<center><div id="container1"></div></center>
+<div id="titlediv">Realtime Routing Graph</div>
+<div id="attackdiv"></div>
+<div id="aboutdiv"><i class="fa fa-question-circle fa-2x" onClick="about();"></i></div>
+
+<div id="ccdiv">
+    <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+</div>
+
+<div id="about">
+    <h3>About Realtime Routing Graph</h3>
+    Realtime Routing Graph is implemented to visualize the routing of ICN<br/>
+    <br/>
+    Check out the <a target=_blank href='https://github.com/qiaolunzhang/attack-graph'>github repository</a> for more information and instructions on how to customize the map options for maximum effect.<br/>
+    <br/>
+    Brought to you by <a target=_blank href="https://github.com/qiaolunzhang">@qiaolunzhang</a>, <a target=_blank href="http://twitter.com/alexcpsec">@alexcpsec</a>, <a target=_blank href="http://twitter.com/hrbrmstr">@hrbrmstr</a> &amp; <a target=_blank href="http://dds.ec/blog">Data-Driven Security</a>
+</div>
+
+<!-- Use Hash-Bang to maintain scroll position when closing modal -->
+<a href="#!" class="modal-close" title="Close this modal"
+   data-dismiss="modal" data-close="Close">&times;</a>
+</section>
+
+
+<script>
+
+    // setup default min/max timer range for random draw
+    attack_min = 100 ;
+    attack_max = 2000 ;
+
+    // add/change the attack types here
+    attack_type = [ "any port scan in a storm", "ssh brutish force", "Thought Leader Tweet",
+        "SYN FLOOD BA-BY", "Spotty", "Heartbleed Hotel", "Po_ODLE", "Sharknado",
+        "CORGI Attack", "Ping of DOOM", "Conficker", "Goldfinger", "SANDPAPER",
+        "SNAILshock", "Spaghetti RAT", "Driduplex" ] ;
+
+
+    // we maintain a fixed queue of "attacks" via this class
+    function FixedQueue( size, initialValues ){
+        initialValues = (initialValues || []);
+        var queue = Array.apply( null, initialValues );
+        queue.fixedSize = size;
+        queue.push = FixedQueue.push;
+        queue.splice = FixedQueue.splice;
+        queue.unshift = FixedQueue.unshift;
+        FixedQueue.trimTail.call( queue );
+        return( queue );
+    }
+
+    FixedQueue.trimHead = function(){
+        if (this.length <= this.fixedSize){ return; }
+        Array.prototype.splice.call( this, 0, (this.length - this.fixedSize) );
+    };
+
+    FixedQueue.trimTail = function(){
+        if (this.length <= this.fixedSize) { return; }
+        Array.prototype.splice.call( this, this.fixedSize, (this.length - this.fixedSize)
+        );
+    };
+
+    FixedQueue.wrapMethod = function( methodName, trimMethod ){
+        var wrapper = function(){
+            var method = Array.prototype[ methodName ];
+            var result = method.apply( this, arguments );
+            trimMethod.call( this );
+            return( result );
+        };
+        return( wrapper );
+    };
+
+    FixedQueue.push = FixedQueue.wrapMethod( "push", FixedQueue.trimHead );
+    FixedQueue.splice = FixedQueue.wrapMethod( "splice", FixedQueue.trimTail );
+    FixedQueue.unshift = FixedQueue.wrapMethod( "unshift", FixedQueue.trimTail );
+
+    var rand = function(min, max) {
+        return Math.random() * (max - min) + min;
+    };
+
+    var getRandomCountry = function(countries, weight) {
+
+        var total_weight = weight.reduce(function (prev, cur, i, arr) {
+            return prev + cur;
+        });
+
+        var random_num = rand(0, total_weight);
+        var weight_sum = 0;
+
+        for (var i = 0; i < countries.length; i++) {
+            weight_sum += weight[i];
+            weight_sum = +weight_sum.toFixed(2);
+
+            if (random_num <= weight_sum) {
+                return countries[i];
+            }
+        }
+
+    };
+
+    // need to make this dynamic since it is approximated from sources
+
+    var countries = [9,22,29,49,56,58,78,82,102,117,139,176,186] ;
+    var weight = [0.000,0.001,0.004,0.008,0.009,0.037,0.181,0.002,0.000,0.415,0.006,0.075,0.088];
+
+    // the fun begins!
+    //
+    // pretty simple setup ->
+    // * make base Datamap
+    // * setup timers to add random events to a queue
+    // * update the Datamap
+
+    var map = new Datamap({
+
+        scope: 'world',
+        element: document.getElementById('container1'),
+        projection: 'winkel3',
+        // change the projection to something else only if you have absolutely no cartographic sense
+
+        fills: { defaultFill: 'black', },
+
+        geographyConfig: {
+            dataUrl: null,
+            hideAntarctica: true,
+            borderWidth: 0.75,
+            borderColor: '#4393c3',
+            popupTemplate: function(geography, data) {
+                return '<div class="hoverinfo" style="color:white;background:black">' +
+                    geography.properties.name + '</div>';
+            },
+            popupOnHover: true,
+            highlightOnHover: false,
+            highlightFillColor: 'black',
+            highlightBorderColor: 'rgba(250, 15, 160, 0.2)',
+            highlightBorderWidth: 2
+        },
+
+    })
+
+    // we read in a modified file of all country centers
+    var centers = [] ;
+    // @todo 直接用了固定的slatlong长度，以后可以改掉
+    var slatlong_length = 2529;
+    d3.tsv("country_centroids_primary.csv", function(data) { centers = data; });
+    d3.csv("samplatlong.csv", function(data) { slatlong = data;});
+    d3.csv("cnlatlong.csv", function(data) { cnlatlong = data; });
+
+    // setup structures for the "hits" (arcs)
+    // and circle booms
+    var attack_type = 1;
+
+    var attack_pass = 1;
+
+    var hits = FixedQueue( 5, [  ] );
+    var boom = FixedQueue( 5, [  ] );
+
+    var src_array = new Array(5);
+    var dst_array = new Array(5);
+    var ip_array = new Array(5);
+
+    //@todo Index只是为了调试
+    var index = 0;
+    // i的数字决定了这里产生的点的个数
+    for (var i = 0; i < 8; i++) {
+        src_array[i] = -1;
+        dst_array[i] = -1;
+    }
+
+    // function include in array
+    function include(arr, obj) {
+        for(var i=0; i<arr.length; i++) {
+            if (arr[i] == obj) return true;
+        }
+    }
+
+    // we need random numbers and also a way to build random ip addresses
+    function getRandomInt(min, max) {return Math.floor(Math.random() * (max - min + 1)) + min;}
+    function getOctet() {return Math.round(Math.random()*255);}
+    function randomIP () { return(getOctet() + '.' + getOctet() + '.' + getOctet() + '.' + getOctet()); }
+    function getStroke() {return Math.round(Math.random()*100);}
+    function getDestination() {return Math.round(Math.random()*100);}
+
+    // doing this a bit fancy for a hack, but it makes it
+    // easier to group code functions together and have variables
+    // out of global scope
+    var attacks = {
+
+        interval: getRandomInt(attack_min, attack_max),
+
+        time_read: 0,
+
+        attack_position: 1,
+
+        src_now: -1,
+
+        dst_now: -1,
+
+        attack_data: "",
+
+        init: function(){
+            setTimeout(
+                jQuery.proxy(this.getData, this),
+                this.interval
+            );
+            this.time_read = this.time_read + this.interval/1000.0;
+            if (this.time_read > 3) {
+                this.time_read = 0;
+                // @todo 在这里读取文件
+                d3.csv("../icn_sim/log/visualize.csv",function(error,attack_data){
+                    attacks.attack_data = d3.csv.format(attack_data).split('\n');
+                    if(error){
+                        console.log(error);
+                    }
+                    //console.log(attack_data);
+               });
+
+                d3.csv("../icn_sim/log/visualize_ip.csv",function(error,attack_data){
+                    ip_array = d3.csv.format(attack_data).split('\n');
+                    if(error){
+                        console.log(error);
+                    }
+                    //console.log(attack_data);
+               });
+
+            }
+            // 0 1
+            if (this.attack_position < this.attack_data.length) {
+                this.src_now = parseInt(this.attack_data[this.attack_position].split(",")[0]);
+                this.dst_now = parseInt(this.attack_data[this.attack_position].split(",")[1]);
+                if (parseInt(this.attack_data[this.attack_position].split(",")[2]) == 1) {
+                    attack_type = 1;
+                } else {
+                    attack_type = 2;
+                }
+
+                if (parseInt(this.attack_data[this.attack_position].split(",")[3]) == 1) {
+                    attack_pass = 1;
+                } else {
+                    attack_pass = 0;
+                }
+
+                this.attack_position = this.attack_position + 1;
+            } else {
+                this.src_now = -1;
+                this.dst_now = -1;
+            }
+
+        },
+
+        //@todo 获得五个不同的点
+        //@todo JS定期任务
+        getPosition: function() {
+            var self = this;
+            for (var i = 0; i < 8; i++) {
+                dst = Math.floor((Math.random() * slatlong_length));
+                while (include(dst_array, dst) || include(src_array, dst)) {
+                    dst = Math.floor((Math.random() * slatlong_length));
+                }
+                dst_array[i] = dst;
+                src = Math.floor((Math.random() * slatlong_length));
+                while (include(src_array, src) || include(dst_array, src)) {
+                    src = Math.floor((Math.random() * slatlong_length));
+                }
+                src_array[i] = src;
+            }
+        },
+
+        getData: function() {
+
+            var self = this;
+
+
+            /*
+            dst = Math.floor((Math.random() * slatlong.length));
+            src = Math.floor((Math.random() * slatlong.length));
+
+            if ((dst == src)) {
+                dst = src + 1 ;
+                if (dst > slatlong.length-1) { dst = src - 1 }
+            }
+
+            // add hit to the arc queue
+            // use strokeColor to set arc line color
+            */
+            if (this.dst_now === -1) {
+                this.interval = getRandomInt(attack_min, attack_max);
+                this.init() ;
+                return
+            }
+            dst = dst_array[this.dst_now];
+            src = dst_array[this.src_now];
+
+
+            var srclat = slatlong[src].lat;
+            var srclong = slatlong[src].long;
+            var dstlat = slatlong[dst].lat;
+            var dstlong = slatlong[dst].long;
+            which_attack = attack_type[Math.floor((Math.random() * attack_type.length))];
+            var srccountry = slatlong[src]["country"];
+            attackdiv_slatlong = slatlong[dst]["country"];
+
+            //@todo 改变颜色, 需要根据csv指定一个新的flag
+            console.log(self.attack_type);
+            if (attack_type == 1) {
+                strokeColor = 'green';
+            }
+            else {
+                strokeColor = 'red';
+            }
+
+
+            hits.push( { origin : { latitude: +srclat, longitude: +srclong },
+                destination : { latitude: +dstlat, longitude: +dstlong } } );
+            map.arc(hits, {strokeWidth: 2, strokeColor: strokeColor});
+
+            // add boom to the bubbles queue
+
+            boom.push( { radius: 7, latitude: +dstlat, longitude: +dstlong,
+                fillOpacity: 0.5, attk: which_attack} );
+            // 这里要改一下，如果被blocked之后就显示blocked
+            map.bubbles(boom, {
+                popupTemplate: function(geo, data) {
+                    return '<div class="hoverinfo">' + '</div>';
+                }
+            });
+
+            if (attack_pass == 1) {
+                attacks = "pass";
+            } else {
+                attacks = "blocked";
+            }
+            // update the scrolling attack div
+            $('#attackdiv').append( "(" + ip_array[this.src_now] + ") " +
+                "====>" +
+                 " (" + ip_array[this.dst_now] + ") "  +
+                    " <span style='color:red'>" + attacks + "</span> " +
+                "<br/>");
+            $('#attackdiv').animate({scrollTop: $('#attackdiv').prop("scrollHeight")}, 500);
+
+            if (index == 4) {
+                index = 0;
+            } else {
+                index = index + 1;
+            }
+
+            // pick a new random time and start the timer again!
+            //this.interval = getRandomInt(attack_min, attack_max);
+            this.interval = 2000;
+            //@todo 重复产生点被注释掉了
+            this.init() ;
+        },
+
+    };
+
+    // 产生攻击的点
+    attacks.getPosition();
+    // start the ball rolling!
+    attacks.init();
+
+    // lazy-dude's responsive window
+    d3.select(window).on('resize', function() { location.reload(); });
+
+</script>
+
+</body>
+</html>
