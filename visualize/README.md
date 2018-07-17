@@ -1,6 +1,8 @@
 # 可视化实现思路
 *thanks to [pewpew](https://github.com/hrbrmstr/pewpew)*
 
+## visualize.html思路
+
 - src_now和dst_now用于表明是哪一个位置，如果为-1就表示没有新的点。
 接下来进入画图的时候就会直接跳出来
 - attack_position表明显示到log文件的哪里了。如果没有显示到结尾，就会设置
@@ -37,3 +39,5 @@ init: function(){
 
 },
 ```
+
+## visualize.py思路

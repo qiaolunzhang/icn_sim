@@ -318,6 +318,10 @@
                 this.interval
             );
             this.time_read = this.time_read + this.interval/1000.0;
+
+            console.log(this.time_read);
+
+
             if (this.time_read > 3) {
                 this.time_read = 0;
                 // @todo 在这里读取文件
@@ -400,69 +404,74 @@
             if (this.dst_now === -1) {
                 this.interval = getRandomInt(attack_min, attack_max);
                 this.init() ;
-                return
-            }
-            dst = dst_array[this.dst_now];
-            src = dst_array[this.src_now];
-
-
-            var srclat = slatlong[src].lat;
-            var srclong = slatlong[src].long;
-            var dstlat = slatlong[dst].lat;
-            var dstlong = slatlong[dst].long;
-            which_attack = attack_type[Math.floor((Math.random() * attack_type.length))];
-            var srccountry = slatlong[src]["country"];
-            attackdiv_slatlong = slatlong[dst]["country"];
-
-            //@todo 改变颜色, 需要根据csv指定一个新的flag
-            console.log(self.attack_type);
-            if (attack_type == 1) {
-                strokeColor = 'green';
             }
             else {
-                strokeColor = 'red';
-            }
+                dst = dst_array[this.dst_now];
+                src = dst_array[this.src_now];
 
 
-            hits.push( { origin : { latitude: +srclat, longitude: +srclong },
-                destination : { latitude: +dstlat, longitude: +dstlong } } );
-            map.arc(hits, {strokeWidth: 2, strokeColor: strokeColor});
+                var srclat = slatlong[src].lat;
+                var srclong = slatlong[src].long;
+                var dstlat = slatlong[dst].lat;
+                var dstlong = slatlong[dst].long;
+                which_attack = attack_type[Math.floor((Math.random() * attack_type.length))];
+                var srccountry = slatlong[src]["country"];
+                attackdiv_slatlong = slatlong[dst]["country"];
 
-            // add boom to the bubbles queue
-
-            boom.push( { radius: 7, latitude: +dstlat, longitude: +dstlong,
-                fillOpacity: 0.5, attk: which_attack} );
-            // 这里要改一下，如果被blocked之后就显示blocked
-            map.bubbles(boom, {
-                popupTemplate: function(geo, data) {
-                    return '<div class="hoverinfo">' + '</div>';
+                //@todo 改变颜色, 需要根据csv指定一个新的flag
+                console.log(self.attack_type);
+                if (attack_type == 1) {
+                    strokeColor = 'green';
                 }
-            });
+                else {
+                    strokeColor = 'red';
+                }
 
-            if (attack_pass == 1) {
-                attacks = "pass";
-            } else {
-                attacks = "blocked";
-            }
-            // update the scrolling attack div
-            $('#attackdiv').append( "(" + ip_array[this.src_now] + ") " +
-                "====>" +
-                 " (" + ip_array[this.dst_now] + ") "  +
+
+                hits.push({
+                    origin: {latitude: +srclat, longitude: +srclong},
+                    destination: {latitude: +dstlat, longitude: +dstlong}
+                });
+                map.arc(hits, {strokeWidth: 2, strokeColor: strokeColor});
+
+                // add boom to the bubbles queue
+
+                boom.push({
+                    radius: 7, latitude: +dstlat, longitude: +dstlong,
+                    fillOpacity: 0.5, attk: which_attack
+                });
+                // 这里要改一下，如果被blocked之后就显示blocked
+                map.bubbles(boom, {
+                    popupTemplate: function (geo, data) {
+                        return '<div class="hoverinfo">' + '</div>';
+                    }
+                });
+
+                if (attack_pass == 1) {
+                    attacks = "pass";
+                } else {
+                    attacks = "blocked";
+                }
+                // update the scrolling attack div
+                $('#attackdiv').append("(" + ip_array[this.src_now] + ") " +
+                    "====>" +
+                    " (" + ip_array[this.dst_now] + ") " +
                     " <span style='color:red'>" + attacks + "</span> " +
-                "<br/>");
-            $('#attackdiv').animate({scrollTop: $('#attackdiv').prop("scrollHeight")}, 500);
+                    "<br/>");
+                $('#attackdiv').animate({scrollTop: $('#attackdiv').prop("scrollHeight")}, 500);
 
-            if (index == 4) {
-                index = 0;
-            } else {
-                index = index + 1;
+                if (index == 4) {
+                    index = 0;
+                } else {
+                    index = index + 1;
+                }
+
+                // pick a new random time and start the timer again!
+                //this.interval = getRandomInt(attack_min, attack_max);
+                this.interval = 2000;
+                //@todo 重复产生点被注释掉了
+                this.init();
             }
-
-            // pick a new random time and start the timer again!
-            //this.interval = getRandomInt(attack_min, attack_max);
-            this.interval = 2000;
-            //@todo 重复产生点被注释掉了
-            this.init() ;
         },
 
     };
