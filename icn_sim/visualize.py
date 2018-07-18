@@ -83,6 +83,16 @@ class Visualize:
             message_list = [x.strip() for x in message.split(',')]
             # 在这里message_list[0]是ip地址
             # 记录IP地址
+            if message_list[1] in self.machine_dic.keys():
+                message_list[1] = self.machine_dic[message_list[1]]
+            else:
+                with open("./log/visualize_ip.csv", "a+") as f:
+                    f.write(message_list[1]+'\n')
+                self.machine_dic[message_list[1]] = self.machine_index
+                message_list[1] = self.machine_index
+                self.machine_index = self.machine_index + 1
+
+
             if message_list[0] in self.machine_dic.keys():
                 message_list[0] = self.machine_dic[message_list[0]]
             else:
@@ -91,6 +101,8 @@ class Visualize:
                 self.machine_dic[message_list[0]] = self.machine_index
                 message_list[0] = self.machine_index
                 self.machine_index = self.machine_index + 1
+
+
             print("first element: ", message)
             if message_list[1] in self.machine_dic.keys():
                 message_list[1] = self.machine_dic[message_list[1]]

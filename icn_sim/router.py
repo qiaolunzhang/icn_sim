@@ -51,12 +51,30 @@ class Router:
                 print(Exception, ", ", e)
         self._run()
 
+    def tables_log_init(self):
+        try:
+            self.fib_log_file = open("./tables/fib_router.csv", "w+")
+            #self.tables_log_file.write("src,dst,type,pass,time,content_name"+'\n')
+            self.fib_log_file.close()
+        except Exception, e:
+            print(Exception, ", ", e)
+        try:
+            self.pit_log_file = open("./tables/pit_router.csv", "w+")
+            self.pit_log_file.close()
+        except Exception, e:
+            print(Exception, ", ", e)
+        try:
+            self.cs_log_file = open("./tables/cs_router.csv", "w+")
+            self.cs_log_file.close()
+        except Exception, e:
+            print(Exception, ", ", e)
 
     def firewall_init(self):
         try:
             self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.firewall_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             #self.firewall_socket.connect((self.firewall_host, self.firewall_port))
+            #self.firewall_socket.bind((self.host, 0))
             self.firewall_socket.connect(("", self.firewall_port))
             self.firewall_socket.send('5000')
             # 用掉firewall回复的确认
@@ -340,6 +358,19 @@ class Router:
 
         elif typ_content == 2:
             self._process_packet_data(sock, typ_content, data_origin, data)
+
+        try:
+            with open("./tables/fib_router.csv", "w+") as f:
+                for i in self.fib_dic.keys():
+                    f.write(i + " , "+ self.fib_dic[i]+'\n')
+            with open("./tables/pit_router.csv", "w+") as f:
+                for i in self.pit_dic.keys():
+                    f.write(i + " , " + self.pit_dic[i]+'\n')
+            with open("./tables/cs_router.csv", "w+") as f:
+                for i in self.cs_dic.keys():
+                    f.write(i + " , " + self.cs_dic[i]+'\n')
+        except Exception, e:
+            print(Exception, ", ", e)
 
 
     def _run(self):

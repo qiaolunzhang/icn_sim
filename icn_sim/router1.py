@@ -51,6 +51,23 @@ class Router:
                 print(Exception, ", ", e)
         self._run()
 
+    def tables_log_init(self):
+        try:
+            self.fib_log_file = open("./tables/fib_router1.csv", "w+")
+            #self.tables_log_file.write("src,dst,type,pass,time,content_name"+'\n')
+            self.fib_log_file.close()
+        except Exception, e:
+            print(Exception, ", ", e)
+        try:
+            self.pit_log_file = open("./tables/pit_router1.csv", "w+")
+            self.pit_log_file.close()
+        except Exception, e:
+            print(Exception, ", ", e)
+        try:
+            self.cs_log_file = open("./tables/cs_router1.csv", "w+")
+            self.cs_log_file.close()
+        except Exception, e:
+            print(Exception, ", ", e)
 
     def firewall_init(self):
         try:
@@ -69,6 +86,7 @@ class Router:
         try:
             self.visualize_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.visualize_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.visualize_socket.bind((self.host, 0))
             self.visualize_socket.connect((self.visualize_host, self.visualize_port))
             print("Connect to visualize server, host is ", self.visualize_host, "port is ", self.visualize_port)
         except Exception, e:
@@ -339,6 +357,19 @@ class Router:
 
         elif typ_content == 2:
             self._process_packet_data(sock, typ_content, data_origin, data)
+
+        try:
+            with open("./tables/fib_router1.csv", "w+") as f:
+                for i in self.fib_dic.keys():
+                    f.write(i + " , " + self.fib_dic[i]+'\n')
+            with open("./tables/pit_router1.csv", "w+") as f:
+                for i in self.pit_dic.keys():
+                    f.write(i + " , " + self.pit_dic[i]+'\n')
+            with open("./tables/cs_router1.csv", "w+") as f:
+                for i in self.cs_dic.keys():
+                    f.write(i + " , " + self.cs_dic[i]+'\n')
+        except Exception, e:
+            print(Exception, ", ", e)
 
 
     def _run(self):
