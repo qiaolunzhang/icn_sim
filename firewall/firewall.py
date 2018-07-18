@@ -9,14 +9,32 @@ cpu=['','','','']
 class ChatServer:
     def __init__(self,port=5252):
         # todo 使用socketserver来写
+        self.host = ""
+        self.port = 0
+        self.load_config()
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.serverSocket.bind(('', port))
+        self.serverSocket.bind((self.host, self.port))
         self.serverSocket.listen(5)
         print "server wait for connect...."
         self.socketsMap = {}  # socket session字典 id : socket
         self.idMap = {} #socket session 字典 socket:id
         CONNECTION_LIST.append(self.serverSocket)
+
+    def load_config(self):
+        try:
+            with open('./config/firewall.conf') as f:
+                for line in f:
+                    if line[0] != '#':
+                        line = line.split()
+                        if line[0] == 'local_ip':
+                            self.host = line[1]
+                            self.port = int(line[2])
+                            continue
+        except Exception, e:
+            print(Exception, ", ", e)
+            print("Failed to load the config file")
+            raise SystemExit
 
     def login(self,id,sock):#新用户登录
         print "%s login"%id

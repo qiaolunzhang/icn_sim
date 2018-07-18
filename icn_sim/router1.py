@@ -74,7 +74,7 @@ class Router:
             self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.firewall_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             #self.firewall_socket.connect((self.firewall_host, self.firewall_port))
-            self.firewall_socket.connect(("", self.firewall_port))
+            self.firewall_socket.connect((self.firewall_host, self.firewall_port))
             self.firewall_socket.send('5000')
             # 用掉firewall回复的确认
             firewall_result = self.firewall_socket.recv(4096)

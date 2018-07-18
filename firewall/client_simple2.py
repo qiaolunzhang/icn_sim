@@ -6,13 +6,40 @@ ID = '2'
 
 class ChatClient:
     def __init__(self):
+        self.host = ""
+        self.port = 0
+        self.firewall_host = ""
+        self.firewall_port = 0
+        self.load_config()
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.settimeout(2)
         self.connect()
 
+    def load_config(self):
+        try:
+            with open('./config/client.conf') as f:
+                for line in f:
+                    if line[0] != '#':
+                        line = line.split()
+                        if line[0] == 'local_ip':
+                            self.host = line[1]
+                            self.port = int(line[2])
+                            continue
+                        if line[0] == 'firewall_ip':
+                            self.firewall_host = line[1]
+                            self.firewall_port = int(line[2])
+                            continue
+                        if line[0] == 'path':
+                            self.module_path = line[1]
+        except Exception, e:
+            print(Exception, ", ", e)
+            print("Failed to load the config file")
+            raise SystemExit
+
     def connect(self):
         try:
-            self.client_socket.connect((HOST, PORT))
+            self.client_socket.bind((self.host, 0))
+            self.client_socket.connect((self.firewall_host, self.firewall_port))
             self.client_socket.send(ID)
             data = self.client_socket.recv(4096)
             sys.stdout.write(data)
@@ -33,7 +60,7 @@ class ChatClient:
         while 1:
             rlist = [sys.stdin, self.client_socket]  # 接收列表
             read_list, write_list, error_list = select.select(rlist, [], [], 2)
-            
+
             #change
             for sock in read_list:
                 if sock == self.client_socket:
@@ -60,7 +87,7 @@ class ChatClient:
                     remote_id = raw_input("Please input remote id:")
                     msg_send = "%s||%s"%(remote_id,msg)
                     self.client_socket.send(msg_send)
-                    self.prompt()		        
+                    self.prompt()
 
 if __name__ == '__main__':
     chat_client_obj = ChatClient()

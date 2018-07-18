@@ -20,7 +20,7 @@ class ChatClient:
 
     def load_config(self):
         try:
-            with open('./config/client.conf') as f:
+            with open('./config/client2.conf') as f:
                 for line in f:
                     self.module_path = line
             #print(self.fib_dic)
@@ -32,7 +32,7 @@ class ChatClient:
 
     def load_model(self):
         self.blacklist = blacklist
-        self.model = gensim.models.Word2Vec.load("wiki.zh.text.model")
+        self.model = gensim.models.Word2Vec.load("/home/zhang/mycode/firewall-simple2/wiki.zh.text.model")
         self.model.init_sims(replace=True)
 
     def judge_content_name(self, content_name):
@@ -94,7 +94,7 @@ class ChatClient:
         while 1:
             rlist = [sys.stdin, self.client_socket]  # 接收列表
             read_list, write_list, error_list = select.select(rlist, [], [], 2)
-            
+
             #change
             for sock in read_list:
                 if sock == self.client_socket:
@@ -126,7 +126,7 @@ class ChatClient:
                     remote_id = raw_input("Please input remote id:")
                     msg_send = "%s||%s"%(remote_id,msg)
                     self.client_socket.send(msg_send)
-                    self.prompt()		        
+                    self.prompt()
 
 if __name__ == '__main__':
     chat_client_obj = ChatClient()

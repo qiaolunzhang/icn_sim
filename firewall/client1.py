@@ -9,12 +9,16 @@ blacklist = [u'邪教']
 
 class ChatClient:
     def __init__(self):
+        self.host = ""
+        self.port = 0
+        self.firewall_host = ""
+        self.firewall_port = 0
+        self.load_config()
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.settimeout(2)
         self.connect()
-        self.load_config()
+        #self.module_path = "wiki.zh.text.model"
         self.load_model()
-        self.module_path = "wiki.zh.text.model"
         #@todo 后面需要去掉下面这行
         # self.judge_content_name(u'法轮功')
 
@@ -22,8 +26,18 @@ class ChatClient:
         try:
             with open('./config/client.conf') as f:
                 for line in f:
-                    self.module_path = line
-            #print(self.fib_dic)
+                    if line[0] != '#':
+                        line = line.split()
+                        if line[0] == 'local_ip':
+                            self.host = line[1]
+                            self.port = int(line[2])
+                            continue
+                        if line[0] == 'firewall_ip':
+                            self.firewall_host = line[1]
+                            self.firewall_port = int(line[2])
+                            continue
+                        if line[0] == 'path':
+                            self.module_path = line[1]
         except Exception, e:
             print(Exception, ", ", e)
             print("Failed to load the config file")
@@ -32,6 +46,7 @@ class ChatClient:
     def load_model(self):
         self.blacklist = blacklist
         self.model = gensim.models.Word2Vec.load(self.module_path)
+        #self.model = gensim.models.Word2Vec.load("/home/zhang/mycode/firewall-simple/wiki.zh.text.model")
         self.model.init_sims(replace=True)
 
     def judge_content_name(self, content_name):
@@ -92,7 +107,9 @@ class ChatClient:
 
     def connect(self):
         try:
-            self.client_socket.connect((HOST, PORT))
+            self.client_socket.bind((self.host, 0))
+            print(self.firewall_host + " " + str(self.firewall_port))
+            self.client_socket.connect((self.firewall_host, self.firewall_port))
             self.client_socket.send(ID)
             data = self.client_socket.recv(4096)
             sys.stdout.write(data)
