@@ -69,6 +69,7 @@ class Router:
         try:
             self.visualize_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.visualize_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.visualize_socket.bind((self.host, 0))
             self.visualize_socket.connect((self.visualize_host, self.visualize_port))
             print("Connect to visualize server, host is ", self.visualize_host, "port is ", self.visualize_port)
         except Exception, e:
@@ -256,6 +257,7 @@ class Router:
             else:
                 sock_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 print("Send the next hop: ", self.fib_dic[data], " ", 1000)
+                sock_client.bind((self.host, 0))
                 sock_client.connect((self.fib_dic[data], 10000))
 
                 self.out_conn_dic[next_hop_ip] = sock_client
@@ -324,6 +326,8 @@ class Router:
     def _process_packet(self, sock, typ_content, data_origin, data):
         print("\n")
         print("Now process the packet type: ", typ_content)
+        print("The fib table is: \n")
+        print(self.fib_dic)
         print("The pit table is: \n")
         print(self.pit_dic)
         print("\n")

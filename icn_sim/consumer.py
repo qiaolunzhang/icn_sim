@@ -23,10 +23,28 @@ class Consumer:
 
         self.host = host
         self.port = port
+        self.router_host = ""
+        self.router_port = 0
+        self.visualize_host = ""
+        self.visualize_port = 0
+        self.sock_to_ip_dic = {}
         self.connections = [] # collects all the incoming connections
         self.load_config()
         self.log_init()
+        self.visualize_init()
         self._run()
+
+
+    def visualize_init(self):
+        try:
+            self.visualize_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.visualize_socket.bind((self.host, 0))
+            self.visualize_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.visualize_socket.connect((self.visualize_host, self.visualize_port))
+            print("Connect to visualize server, host is ", self.visualize_host, "port is ", self.visualize_port)
+        except Exception, e:
+            print(Exception, ", ", e)
+
 
     def log_init(self):
         try:
@@ -43,8 +61,16 @@ class Consumer:
                 for line in f:
                     if line[0] != '#':
                         line = line.split()
-                        self.host = line[0]
-                        self.port = int(line[1])
+                        if line[0] == 'local_ip':
+                            self.host = line[1]
+                            self.port = int(line[2])
+                        if line[0] == 'router_ip':
+                            self.router_host = line[1]
+                            self.router_port = int(line[2])
+                        if line[0] == 'visual_ip':
+                            self.visualize_host= line[1]
+                            self.visualize_port= int(line[2])
+
         except Exception, e:
             print(Exception, ", ", e)
             raise SystemExit
@@ -56,7 +82,9 @@ class Consumer:
         """
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_socket.connect((self.host, self.port))
+        self.server_socket.bind((self.host, 0))
+        self.server_socket.connect((self.router_host, self.router_port))
+        self.sock_to_ip_dic[self.server_socket] = self.router_host
         self.connections.append(self.server_socket)
         self.connections.append(sys.stdin)
 
@@ -119,7 +147,7 @@ class Consumer:
                 if packet_type == 1:
                     self._process_interest_packet(data)
                 elif packet_type == 2:
-                    self._process_data_packet(data)
+                    self._process_data_packet(data, sock)
             except Exception, e:
                 print("Failed to unpack the packet length")
                 print(Exception, ", ", e)
@@ -137,7 +165,7 @@ class Consumer:
             print(Exception, ", ", e)
 
 
-    def _process_data_packet(self, data):
+    def _process_data_packet(self, data, sock):
         print("\n")
         print("Succeed to get back data packet")
         content_name_len_pack = data[:4]
@@ -155,6 +183,11 @@ class Consumer:
                 time_now = str(datetime.now())
                 packet_log = time_now + " receive data " + content_name + " 1 " + "\n"
                 f.write(packet_log)
+            time_now = datetime.now()
+            time_num_str = str(time_now.year) + str(time_now.month) + str(time_now.day) + str(time_now.hour) + str(time_now.minute) + str(time_now.second) + str(time_now.microsecond)
+            packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "2, " + "1, " + time_num_str + ", " + content_name
+            self.visualize_socket.send(packet_log)
+            print("ok to send to visualize")
         except Exception, e:
             print(Exception, ", ", e)
 
