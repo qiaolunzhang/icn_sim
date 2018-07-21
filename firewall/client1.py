@@ -52,19 +52,18 @@ class ChatClient:
     def judge_content_name(self, content_name):
         try:
             print("***********************************")
-            print("\n Now blacklist is: ")
-            print(self.blacklist)
+            print("\n 雾计算防火墙的威胁内容为: ")
+            for i in self.blacklist:
+                print(i)
 
-            print("before convert: ", content_name)
-            # convert content_name
+            # print("before convert: ", content_name)
             content_name = content_name.decode('utf-8')
-            print("after convert: ", content_name)
+            # print("after convert: ", content_name)
 
             if content_name in blacklist:
-                print("防火墙包含: ")
+                print("请求的内容在雾计算防火墙的威胁内容中: ")
                 for i in self.blacklist:
                     print(i)
-                print("Content name is in blacklist.")
                 return False
 
             for blacklist_element in blacklist:
@@ -75,31 +74,24 @@ class ChatClient:
                 for e in content_name_result:
                     content_name_result_list.append(e[0])
                 #print("\n Content name result is ")
-                print("\n 通过Content name推理出的词汇为：")
+                print("\n 根据语义和"),
+                print(content_name),
+                print("关联的威胁内容为: ")
                 for i in content_name_result_list:
                     print(i)
-                #print(content_name_result_list)
 
                 for i in content_name_result_list:
                     if i in self.blacklist:
                         self.blacklist.append(content_name)
-                        print("The content name is in the result of content name result.")
+                        print("\n")
+                        print(content_name),
+                        print("是威胁内容")
+                        print("\n")
+                        print("雾计算防火墙规则已更新，现在的威胁内容为：")
+                        for i in self.blacklist:
+                            print(i)
                         return False
-                # 通过blacklist来生成
-                element_result = self.model.most_similar(blacklist_element)
-                element_result_list = []
-                for e in element_result:
-                    element_result_list.append(e[0])
-                print("\n Blacklist element ", blacklist_element)
-                #print("\n Blacklist element result is ", element_result_list)
-                print("\n 通过黑名单推理出来的词汇是：")
-                for i in element_result_list:
-                    print(i)
 
-                if content_name in element_result_list:
-                    self.blacklist.append(content_name)
-                    print("The content name is in the result of blacklist result.")
-                    return False
             return True
         except Exception, e:
             print(Exception, ", ", e)
