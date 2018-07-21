@@ -66,6 +66,8 @@ class ChatClient:
                     print(i)
                 return False
 
+            possible_attack = []
+
             for blacklist_element in blacklist:
                 # 通过content name来生成
                 content_name_result = self.model.most_similar(content_name)
@@ -82,10 +84,23 @@ class ChatClient:
 
                 for i in content_name_result_list:
                     if i in self.blacklist:
+                        possible_attack.append(i)
+
+                print("包含在雾计算防火墙中的威胁内容为: ")
+                for i in possible_attack:
+                    print(i)
+                print("\n")
+
+                for i in possible_attack:
+                    possible_element = self.model.most_similar(i)
+                    if content_name in possible_element:
                         self.blacklist.append(content_name)
                         print("\n")
                         print(content_name),
                         print("是威胁内容")
+                        print("和威胁内容——"),
+                        print(i),
+                        print("对应")
                         print("\n")
                         print("雾计算防火墙规则已更新，现在的威胁内容为：")
                         for i in self.blacklist:
