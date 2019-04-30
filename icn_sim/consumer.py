@@ -23,6 +23,8 @@ class Consumer:
 
         self.host = host
         self.port = port
+        self.monitor_host = ""
+        self.monitor_port = 0
         self.router_host = ""
         self.router_port = 0
         self.visualize_host = ""
@@ -38,7 +40,7 @@ class Consumer:
     def visualize_init(self):
         try:
             self.visualize_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.visualize_socket.bind((self.host, 0))
+            self.visualize_socket.bind((self.monitor_host, self.monitor_port))
             self.visualize_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.visualize_socket.connect((self.visualize_host, self.visualize_port))
             print("Connect to visualize server, host is ", self.visualize_host, "port is ", self.visualize_port)
@@ -64,6 +66,9 @@ class Consumer:
                         if line[0] == 'local_ip':
                             self.host = line[1]
                             self.port = int(line[2])
+                        if line[0] == 'wired_ip':
+                            self.monitor_host = line[1]
+                            self.monitor_port = int(line[2])
                         if line[0] == 'router_ip':
                             self.router_host = line[1]
                             self.router_port = int(line[2])
