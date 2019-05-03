@@ -3,3 +3,4 @@ keep
 .keep/send_file/
 .visualize/.idea
 .vscode
+ssh
