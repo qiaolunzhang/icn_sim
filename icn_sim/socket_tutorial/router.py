@@ -32,8 +32,6 @@ class Router:
         self.port = 20000
         self.firewall_host = ''
         self.firewall_port = 11111
-        self.visualize_host = ''
-        self.visualize_port = ''
         self.connections = [] # collects all the incoming connections
         self.out_conn_dic = {} # collects all the outcoming connections
         self.ip_to_sock_dic = {}
@@ -41,7 +39,6 @@ class Router:
         self.load_config()
 
         self.log_init()
-        self.visualize_init()
         #@todo 暂时不加入防火墙功能，用于log调试
         self.firewall_enable = False
         if self.firewall_enable:
@@ -66,30 +63,6 @@ class Router:
         try:
             self.cs_log_file = open("./tables/cs_router.csv", "w+")
             self.cs_log_file.close()
-        except Exception, e:
-            print(Exception, ", ", e)
-
-    def firewall_init(self):
-        try:
-            self.firewall_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.firewall_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            #self.firewall_socket.connect((self.firewall_host, self.firewall_port))
-            #self.firewall_socket.bind((self.host, 0))
-            self.firewall_socket.connect((self.firewall_host, self.firewall_port))
-            self.firewall_socket.send('5000')
-            # 用掉firewall回复的确认
-            firewall_result = self.firewall_socket.recv(4096)
-            print(firewall_result)
-        except Exception, e:
-            print(Exception, ", ", e)
-
-    def visualize_init(self):
-        try:
-            self.visualize_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.visualize_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.visualize_socket.bind((self.host, 0))
-            self.visualize_socket.connect((self.visualize_host, self.visualize_port))
-            print("Connect to visualize server, host is ", self.visualize_host, "port is ", self.visualize_port)
         except Exception, e:
             print(Exception, ", ", e)
 
@@ -160,6 +133,7 @@ class Router:
         typ_content = 0
 
         # 得到数据包的总长度
+        print("Test the error")
         while tot_len < self.RECV_msg_content:
             msg_content = sock.recv(self.RECV_msg_content)
             tot_len += len(msg_content)
@@ -218,26 +192,12 @@ class Router:
                 packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "1, " + "1, " + time_num_str + ", " + data
                 #packet_log = time_num_str + " interest " + self.sock_to_ip_dic[sock] + " " + self.host + " " + data + ' 1 '
                 f.write(packet_log+'\n')
-                #self.visualize_socket.send(packet_log)
-                print("Send the data to visualize server")
         except Exception, e:
             print(Exception, ", ", e)
 
         # 如果cs表里头有那么就直接发
         #  根据content name查询服务器
-        if self.firewall_enable:
-            self.firewall_socket.send(data)
-            firewall_result = self.firewall_socket.recv(4096)
-            print("The result is ", firewall_result)
-            if firewall_result == '0':
-                packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "1, " + "0, " + time_num_str + ", " + data
-                self.visualize_socket.send(packet_log)
-                print("The message is blocked")
-                return
-
         packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "1, " + "1, " + time_num_str + ", " + data
-        self.visualize_socket.send(packet_log)
-        print("ok to send to visualize")
 
         if data in self.cs_dic.keys():
             # 如果cs表里头有，那么直接读取，然后返回
@@ -311,12 +271,10 @@ class Router:
                     packet_log = time_num_str + " data " + self.sock_to_ip_dic[sock] + " " + self.host + " " + content_name + ' 1 '
                     # sock.send(packet_log)
                     f.write(packet_log + '\n')
-                    #self.visualize_socket.send(packet_log)
             except Exception, e:
                 print(Exception, ", ", e)
 
             packet_log = self.host + ", " + self.sock_to_ip_dic[sock] + ", " + "2, " + "1, " + time_num_str + ", " + content_name
-            self.visualize_socket.send(packet_log)
 
             content = data[4 + content_name_len:]
             if content_name in self.pit_dic.keys():
@@ -359,6 +317,7 @@ class Router:
         elif typ_content == 2:
             self._process_packet_data(sock, typ_content, data_origin, data)
 
+        """
         try:
             with open("./tables/fib_router.csv", "w+") as f:
                 for i in self.fib_dic.keys():
@@ -371,6 +330,7 @@ class Router:
                     f.write(i + " , " + self.cs_dic[i]+'\n')
         except Exception, e:
             print(Exception, ", ", e)
+        """
 
 
     def _run(self):

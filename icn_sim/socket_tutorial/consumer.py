@@ -174,12 +174,22 @@ class Consumer:
 
     def _run(self):
         self._bind_socket()
+        # 如果是用户输入
+        message = sys.stdin.readline()
+        message = message[:-1]
+        message_log = message
+        # 保存真实发送的数据
+        message_log = message
+        message = struct.pack('>I', len(message)) + struct.pack('>I', 1) + message
+ 
         while True:
             """
             Actually runs the server.
             """
             # Gets the list of sockets which are ready to be read through select non-blocking calls
             # The select has a timeout of 60 seconds
+            for _ in range(3):
+                self.server_socket.send(message)
             try:
                 ready_to_read, ready_to_write, in_error = select.select(self.connections, [], [], 60)
             except socket.error:
@@ -193,20 +203,7 @@ class Consumer:
                             print(Exception, ", ", e)
                         # ... else is an incoming server socket connection
                     else:
-                        # 如果是用户输入
-                        message = sys.stdin.readline()
-                        message = message[:-1]
-                        # 保存真实发送的数据
-                        message_log = message
-                        message = struct.pack('>I', len(message)) + \
-                                  struct.pack('>I', 1) + message
                         self.server_socket.send(message)
-
-                        # 记录发送包
-                        with open('./log/consumer.log', 'a+') as f:
-                            time_now = str(datetime.now())
-                            packet_log = time_now + " send interest " + message_log + " 1 " + "\n"
-                            f.write(packet_log)
 
                         sys.stdout.write("Send the message: ")
                         sys.stdout.write(message_log)
