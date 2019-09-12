@@ -191,7 +191,7 @@ class Consumer:
             # The select has a timeout of 60 seconds
             for _ in range(3):
                 self.server_socket.send(message)
-                time.sleep(0.1)
+                time.sleep(0.01)
             try:
                 ready_to_read, ready_to_write, in_error = select.select(self.connections, [], [], 60)
             except socket.error:
