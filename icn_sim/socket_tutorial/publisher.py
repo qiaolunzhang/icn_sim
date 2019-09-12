@@ -43,8 +43,7 @@ class Publisher:
                             self.host = line[1]
                             self.port = int(line[2])
                             continue
-                       self.data_dic[line[0]] = line[1]
-
+                        self.data_dic[line[0]] = line[1]
         except Exception, e:
             print(Exception, ", ", e)
             raise SystemExit
