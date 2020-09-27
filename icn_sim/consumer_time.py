@@ -143,10 +143,6 @@ class Consumer:
                         data += chunk
                         tot_data_len += len(chunk)
                 # 原始的整个数据包
-                print("Time is:", time.time() - self.start_time)
-                with open("response_time.csv", "a") as f:
-                    f.write(str(time.time() - self.start_time))
-                    f.write("\n")
                 data_origin = msg_content + typ_content + data
                 print("The received data is ", data, 'the length is', len(data))
                 # 对数据包和兴趣包采取不同的方式
@@ -214,6 +210,10 @@ class Consumer:
                 for sock in ready_to_read:
                     if sock == self.server_socket:
                         try:
+                            print("Time is:", (time.time() - self.start_time)/2)
+                            with open("response_time.csv", "a") as f:
+                                f.write(str((time.time() - self.start_time)/2))
+                                f.write("\n")
                             self._receive(sock)
                         except Exception, e:
                             print(Exception, ", ", e)
